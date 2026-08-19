@@ -1,0 +1,14 @@
+/tmp
+/out-tsc
+
+/node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+/.pnp
+.pnp.js
+
+.vscode/*
+# HYG source catalogue (32 MB, https://codeberg.org/astronexus/hyg data/hyg/CURRENT/hyg_v44.csv.gz)
+data-src/
+dist/

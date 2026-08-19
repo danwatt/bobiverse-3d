@@ -1,0 +1,430 @@
+1.
+Primary Request and Intent:
+The user's single explicit request: build a simple single-page application that is a simulation of the nearby star systems from Earth. Stated requirements:
+◦
+Navigable in 3D
+◦
+Shows stars up to 25 light-years from Earth ("maybe more later" — so the radius should not be hard-baked in a way that blocks widening)
+◦
+Where the user wants to go with it: rendering a timeline indicating travel from one star system to another, with named ships leaving one star in a given year and arriving in another in a given year
+◦
+Sliding through the timeline shows where each ship should be on a straight line between the stars
+The user attached src/index.ts as a file reference with the request.
+Three approach decisions were put to the user via AskUserQuestion and answered:
+◦
+Stack: Vanilla Three.js + Vite (not React Three Fiber, not Babylon.js)
+◦
+Star catalog: Bundled static hand-authored JSON, no runtime network (not a live Gaia/SIMBAD API, not a build-script over a downloaded CSV)
+◦
+Voyages: JSON seed file plus an in-app form to add voyages, in-memory only, no persistence this pass
+The user then approved the written plan via ExitPlanMode ("User has approved your plan. You can now start coding.").
+2.
+Key Technical Concepts:
+◦
+Vanilla Three.js (v0.180.0) + Vite (v7.x) + TypeScript 6.0.3, ESM ("type": "module")
+◦
+THREE.Points with per-vertex color and size BufferAttributes, additive blending, sizeAttenuation: true — single draw call for ~89 stars
+◦
+OrbitControls (damped, target origin) from three/examples/jsm/controls/OrbitControls
+◦
+CSS2DRenderer / CSS2DObject for crisp DOM-based star and ship labels
+◦
+Raycaster with tuned Points.threshold for hover/click picking
+◦
+Equatorial→cartesian coordinate conversion, then remap to Three.js Y-up
+◦
+Scale convention: 1 world unit = 1 light-year, Sun at origin
+◦
+Linear interpolation (Vector3.lerp) for constant-velocity ship positions along straight routes
+◦
+Render-loop delta-driven playback (explicitly NOT setInterval)
+◦
+tsc --noEmit as typecheck-only; Vite owns transpilation
+◦
+resolveJsonModule for importing stars.json / voyages.json directly
+◦
+isolatedModules: true — requires type-only imports (import type { Vector3 } from 'three')
+◦
+noUnusedLocals / noUnusedParameters are ON — no unused bindings allowed in any new source
+◦
+Caveman-mode session hook (level: full): terse fragment prose in user-facing text; code, commits, and PRs written normally. No tool-call narration, no decorative tables/emoji, no long raw error-log dumps. Drop caveman for security warnings and irreversible-action confirmations.
+3.
+Files and Code Sections:
+◦
+src/index.ts — READ then DELETED in an earlier session. Was the entire prior "app": console.log('Happy developing ✨'). Removed because src/main.ts replaces it as the Vite entry point.
+◦
+package.json — REWRITTEN (verbatim current content):
+{
+  "name": "bobiverse",
+  "version": "1.0.0",
+  "description": "3D map of nearby star systems with an interstellar voyage timeline",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.180.0",
+    "typescript": "^6.0.3",
+    "vite": "^7.1.5"
+  },
+  "private": true
+}
+◦
+tsconfig.json — REWRITTEN (verbatim, re-verified this turn):
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["vite/client"],
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "noEmit": true
+  },
+  "include": ["src"]
+}
+◦
+index.html — CREATED at repo root (Vite convention). Critical contract file: it defines every DOM element ID the not-yet-written TypeScript modules must query. Verbatim (re-verified this turn):
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bobiverse — Stars Within 25 Light-Years</title>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <!-- Top-left: scene info + display toggles -->
+    <div class="panel panel--top-left">
+      <h1>Local Bubble</h1>
+      <p class="subtle"><span id="star-count">0</span> systems within 25 ly</p>
+      <label class="check">
+        <input type="checkbox" id="toggle-all-labels" />
+        Label every system
+      </label>
+      <label class="check">
+        <input type="checkbox" id="toggle-grid" checked />
+        Reference grid &amp; rings
+      </label>
+      <label class="check">
+        <input type="checkbox" id="toggle-routes" checked />
+        Voyage routes
+      </label>
+    </div>
+
+    <!-- Top-right: selected system details -->
+    <div class="panel panel--top-right" id="info-panel" hidden>
+      <button class="close" id="info-close" aria-label="Close">&times;</button>
+      <h2 id="info-name">—</h2>
+      <p class="subtle" id="info-distance"></p>
+      <ul id="info-components"></ul>
+    </div>
+
+    <!-- Bottom: timeline -->
+    <div class="panel panel--bottom" id="timeline-panel">
+      <div class="timeline-row">
+        <button id="play-toggle" class="btn btn--play" title="Play / pause">▶</button>
+        <input type="range" id="year-slider" class="slider" />
+        <div class="year-box">
+          <input type="number" id="year-input" class="year-input" step="1" />
+          <span class="subtle">CE</span>
+        </div>
+        <div class="speeds" role="group" aria-label="Playback speed">
+          <button class="btn btn--speed" data-speed="0.25">0.25&times;</button>
+          <button class="btn btn--speed is-active" data-speed="1">1&times;</button>
+          <button class="btn btn--speed" data-speed="4">4&times;</button>
+        </div>
+      </div>
+      <div class="timeline-row timeline-row--fleet">
+        <ul id="fleet-list" class="fleet-list"></ul>
+        <button id="voyage-form-toggle" class="btn">+ Voyage</button>
+      </div>
+    </div>
+
+    <!-- Add-voyage form -->
+    <form class="panel panel--form" id="voyage-form" hidden>
+      <h2>New voyage</h2>
+      <label>
+        Ship name
+        <input type="text" id="vf-ship" required placeholder="e.g. Heaven-1" />
+      </label>
+      <label>
+        Origin
+        <select id="vf-origin" required></select>
+      </label>
+      <label>
+        Destination
+        <select id="vf-destination" required></select>
+      </label>
+      <div class="form-row">
+        <label>
+          Depart (year)
+          <input type="number" id="vf-depart" required step="1" />
+        </label>
+        <label>
+          Arrive (year)
+          <input type="number" id="vf-arrive" required step="1" />
+        </label>
+      </div>
+      <p class="form-hint" id="vf-hint"></p>
+      <p class="form-error" id="vf-error" hidden></p>
+      <div class="form-actions">
+        <button type="button" class="btn" id="vf-cancel">Cancel</button>
+        <button type="submit" class="btn btn--primary">Add voyage</button>
+      </div>
+    </form>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
+◦
+src/types.ts — CREATED. The type contract every other module builds against. Verbatim (re-verified this turn):
+import type { Vector3 } from 'three';
+
+/** One physical star (or brown dwarf / white dwarf) inside a system. */
+export interface StarComponent {
+  /** Display name, e.g. "α Cen A". */
+  name: string;
+  /** Morgan-Keenan spectral type, e.g. "G2V", "M5.5Ve", "DZ8" (white dwarf), "T8" (brown dwarf). */
+  spectral: string;
+  /** Absolute visual magnitude. Omitted for objects too cool to have a meaningful V. */
+  absMag?: number;
+}
+
+/**
+ * One star *system* — a gravitationally bound group sharing a position on the map.
+ *
+ * Positions are stored as catalogue values (equatorial RA/Dec + distance) rather than
+ * pre-computed cartesian coordinates so they stay diffable against a published catalogue.
+ * Conversion to world space happens in `astro.ts`.
+ */
+export interface Star {
+  /** Stable slug used by voyages to reference this system. */
+  id: string;
+  name: string;
+  /** Right ascension, in hours (0–24). J2000. */
+  ra: number;
+  /** Declination, in degrees (-90–90). J2000. */
+  dec: number;
+  /** Distance from the Sun, in light-years. */
+  distanceLy: number;
+  components: StarComponent[];
+  /** Optional free-text note shown in the info panel. */
+  note?: string;
+}
+
+/** Shape of `data/stars.json`. */
+export interface StarCatalog {
+  meta: {
+    horizonLy: number;
+    epoch: string;
+    provenance: string;
+  };
+  systems: Star[];
+}
+
+/** A named ship travelling in a straight line between two systems at constant speed. */
+export interface Voyage {
+  id: string;
+  shipName: string;
+  /** `Star.id` of the departure system. */
+  originId: string;
+  /** `Star.id` of the arrival system. */
+  destinationId: string;
+  departYear: number;
+  arriveYear: number;
+}
+
+export type ShipPhase = 'pending' | 'transit' | 'arrived';
+
+/** A voyage evaluated at one instant on the timeline. */
+export interface ShipState {
+  voyage: Voyage;
+  phase: ShipPhase;
+  /** Fraction of the route covered, clamped to 0–1. */
+  progress: number;
+  /** World-space position at the evaluated year. */
+  position: Vector3;
+}
+Design decision: StarCatalog was added beyond the original plan because stars.json is an object { meta, systems } rather than a bare array — JSON can't hold comments, so provenance and the accuracy caveat live in meta.
+◦
+src/data/stars.json — CREATED THIS SESSION. Satisfies StarCatalog. Too large to re-read into context, but authored by me so contents are known:
+▪
+meta: horizonLy: 25, epoch: "J2000", and a long provenance string stating: hand-authored from published values (RECONS / Gliese-Jahreiss lineage); positions good to a few arcminutes; distances to roughly 0.1 ly; coverage complete for bright and historically named systems; some very faint late-M, L, T and Y dwarfs inside 25 ly are almost certainly missing; replace wholesale from a parsed HYG/Gliese CSV if survey-grade completeness is needed.
+▪
+89 system records, roughly ascending by distance. Every record has id, name, ra (hours), dec (degrees), distanceLy, components[]; many have a note.
+▪
+Complete id list in file order (this is the reference set for voyages.json, fleet.ts, and the form's <select> options):
+sol, alpha-centauri, barnards-star, luhman-16, wise-0855-0714, wolf-359, lalande-21185, sirius, luyten-726-8, ross-154, ross-248, epsilon-eridani, lacaille-9352, ross-128, wise-1506-7027, ez-aquarii, 61-cygni, procyon, struve-2398, groombridge-34, dx-cancri, epsilon-indi, tau-ceti, gj-1061, yz-ceti, luytens-star, teegardens-star, scr-1845-6357, kapteyns-star, lacaille-8760, kruger-60, den-1048-3956, ross-614, ugps-0722-0540, wolf-1061, van-maanens-star, gliese-1, wolf-424, tz-arietis, lhs-292, gliese-687, gj-674, gj-1245, lp-145-141, gj-876, lhs-288, gj-1002, gj-412, groombridge-1618, ad-leonis, gj-832, den-0255-4700, gj-682, 40-eridani, ev-lacertae, 70-ophiuchi, altair, gj-1005, gj-1116, 2mass-0939-2448, gj-3379, gj-445, gj-526, stein-2051, gj-251, gj-205, lhs-1723, gj-229, sigma-draconis, wise-0350-5658, gj-693, gj-570, gj-908, gj-588, gj-752, gj-754, eta-cassiopeiae, 36-ophiuchi, yz-canis-minoris, 82-eridani, delta-pavonis, hr-7703, eq-pegasi, gj-892, xi-bootis, beta-hydri, 107-piscium, vega, fomalhaut
+▪
+Example record shape as actually written:
+{
+  "id": "alpha-centauri",
+  "name": "Alpha Centauri",
+  "ra": 14.66,
+  "dec": -60.8353,
+  "distanceLy": 4.365,
+  "components": [
+    { "name": "α Cen A", "spectral": "G2V", "absMag": 4.38 },
+    { "name": "α Cen B", "spectral": "K1V", "absMag": 5.71 },
+    { "name": "Proxima Centauri", "spectral": "M5.5Ve", "absMag": 15.6 }
+  ],
+  "note": "Proxima is 4.246 ly and gravitationally bound but sits ~2° off A/B on the sky."
+}
+▪
+sol is ra: 0, dec: 0, distanceLy: 0 with note "Origin of the coordinate system." Because d = 0, the standard conversion yields (0,0,0) with no special-casing needed in astro.ts.
+▪
+Spot-check distances for verification: Alpha Centauri 4.365, Barnard's 5.963, Sirius 8.601, Tau Ceti 11.912, Vega 25.04, Fomalhaut 25.13.
+▪
+Brown/white dwarfs deliberately included (Luhman 16, WISE 0855−0714, WISE 1506+7027, UGPS 0722−0540, DEN 0255−4700, DEN 1048−3956, 2MASS 0939−2448, WISE 0350−5658, Van Maanen's Star, LP 145-141, Stein 2051).
+▪
+Minor cosmetic wrinkle, not a bug: wise-0350-5658 (18.0 ly) sits after sigma-draconis (18.8 ly), so the file is not strictly distance-sorted. Order is irrelevant to rendering.
+◦
+src/data/voyages.json — CREATED THIS SESSION. Voyage[], 8 Bobiverse-themed seeds. Verbatim (re-verified this turn):
+[
+  { "id": "bob-1",  "shipName": "Bob-1",  "originId": "sol",              "destinationId": "epsilon-eridani", "departYear": 2133, "arriveYear": 2145 },
+  { "id": "mario",  "shipName": "Mario",  "originId": "epsilon-eridani",  "destinationId": "alpha-centauri",  "departYear": 2145, "arriveYear": 2157 },
+  { "id": "riker",  "shipName": "Riker",  "originId": "epsilon-eridani",  "destinationId": "sol",             "departYear": 2145, "arriveYear": 2156 },
+  { "id": "milo",   "shipName": "Milo",   "originId": "epsilon-eridani",  "destinationId": "40-eridani",      "departYear": 2145, "arriveYear": 2165 },
+  { "id": "bill",   "shipName": "Bill",   "originId": "epsilon-eridani",  "destinationId": "82-eridani",      "departYear": 2146, "arriveYear": 2172 },
+  { "id": "marvin", "shipName": "Marvin", "originId": "epsilon-eridani",  "destinationId": "delta-pavonis",   "departYear": 2146, "arriveYear": 2178 },
+  { "id": "homer",  "shipName": "Homer",  "originId": "sol",              "destinationId": "sirius",          "departYear": 2158, "arriveYear": 2172 },
+  { "id": "bender", "shipName": "Bender", "originId": "40-eridani",       "destinationId": "gj-876",          "departYear": 2166, "arriveYear": 2190 }
+]
+(Written multi-line/pretty in the actual file; collapsed here for brevity.) All 8 originId/destinationId values exist in the catalog id list. Seed timeline span: earliest depart 2133, latest arrive 2190, so the initial slider range per the plan formula is [2128, 2195].
+◦
+/Users/danwatt/.claude/plans/synchronous-meandering-panda.md — the approved plan, still on disk, re-surfaced this turn.
+◦
+Files still to be created (none exist yet):
+▪
+src/astro.ts — equatorialToVec3(), spectralColor() (O→B→A→F→G→K→M→white-dwarf/brown-dwarf ramp), magnitudeToRadius()
+▪
+src/scene.ts — renderer, perspective camera, OrbitControls, CSS2DRenderer overlay, resize handling, render loop
+▪
+src/starfield.ts — star visuals + labels; exposes starPositions: Map<string, Vector3> for the fleet layer
+▪
+src/refGrid.ts — equatorial plane grid + radial rings at 5/10/15/20/25 ly + axis ticks
+▪
+src/fleet.ts — voyage lines, ship markers, updateFleet(year)
+▪
+src/timeline.ts — year state, slider, play/pause, speed, readout
+▪
+src/ui/voyageForm.ts — add-voyage form wiring
+▪
+src/style.css — dark UI, overlay panels, label styling
+▪
+src/main.ts — bootstrap (Vite entry, already referenced by index.html)
+Agreed coordinate math (implement in src/astro.ts):
+xEq = d * cos(dec) * cos(ra)
+yEq = d * cos(dec) * sin(ra)
+zEq = d * sin(dec)
+three = (xEq, zEq, -yEq)   // celestial north = +Y
+Note ra is stored in hours and must be multiplied by 15 to get degrees before conversion to radians; dec is already in degrees.
+Agreed per-frame voyage math (implement in src/fleet.ts):
+◦
+t = clamp((year - departYear) / (arriveYear - departYear), 0, 1)
+◦
+pos = origin.lerp(destination, t)
+◦
+Guard: if arriveYear === departYear, treat as instantaneous, t = year >= departYear ? 1 : 0 (avoids divide-by-zero)
+◦
+year < departYear → ship hidden, route dim; year > arriveYear → marker parked at destination, route fully bright
+◦
+Route = dim full-length line origin→destination + bright line origin→pos for the travelled leg
+◦
+Ship marker = small cone oriented along route + CSS2DObject label with shipName and, in transit, % complete
+◦
+Timeline range = [min(departYear) - 5, max(arriveYear) + 5], recomputed when a voyage is added
+4.
+Errors and fixes:
+No errors in this session. All tool calls succeeded. One benign npm warning surfaced during the earlier install and was correctly not acted on (pre-existing user npm config, unrelated to this project):
+npm warn Unknown env config "min-release-age". This will stop working in the next major version of npm.
+No user corrections or negative feedback have been received at any point in the conversation.
+5.
+Problem Solving:
+◦
+Diagnosed the existing scaffold as unusable: tsconfig.json was commonjs/es2016 with no DOM lib and an outDir, so all three pre-existing files had to be rewritten rather than extended.
+◦
+Chose catalog storage format for auditability: store ra/dec/distanceLy and convert at load rather than pre-baking cartesian, specifically so values can be diffed against a published catalog by eye.
+◦
+Solved the "JSON can't hold comments" problem by shaping stars.json as { meta: { horizonLy, epoch, provenance }, systems: [...] } — provenance and accuracy caveat live inside the data file. Added the StarCatalog interface to types.ts to match.
+◦
+Resolved the 25 ly boundary edge case: Vega (25.04 ly) and Fomalhaut (25.13 ly) fall just outside a strict 25.0 cutoff. Decision: include both — a nearby-stars map missing Vega reads as broken. Rings drawn at 5/10/15/20/25 ly; two stars sitting a hair outside the outer ring is visually honest, and both carry note text saying so. This means the plan's verification step "Confirm nothing renders outside the 25 ly ring" is relaxed to "nothing beyond ~25.2 ly".
+◦
+Excluded as >25 ly (deliberate, verified during authoring): 61 Virginis (27.9), Chi Draconis (26.3), GJ 1151 (26.2), p Eridani (26.3), Pi3 Orionis (26.3), Mu Herculis (27.1), Chara (27.4), Zeta Tucanae (28), Groombridge 1830 (29.8).
+◦
+Decided to include brown dwarfs — real inhabitants of the 25 ly bubble and thematically apt for a Bobiverse map.
+◦
+Flagged the catalog-accuracy risk in-band rather than burying it: the provenance string in stars.json itself states the precision and the known incompleteness. Mitigation baked into the design — stars.json is plain diffable JSON, so a follow-up scripts/build-catalog.ts parsing a checked-in HYG/Gliese CSV can swap the file wholesale without touching any other module. Deliberately deferred (needs a multi-MB CSV committed).
+◦
+Final count is 89 systems, just under the plan's "~90–120" band. Adequate for the verification criterion; adding a handful more faint dwarfs is a cheap follow-up if desired, but not required and not worth inventing coordinates for.
+◦
+Skipped Explore/Plan subagents deliberately, per the standing session instruction "Do not call the AgentTool unless the user requested it".
+◦
+Added a reference grid + radial rings to the design because a bare point cloud reads as flat with no depth cue.
+◦
+Decided labels default to a subset (brighter than a magnitude cutoff, or within 12 ly) with a "Label every system" toggle, to avoid a wall of overlapping text.
+6.
+All user messages:
+◦
+"I want to build a simple single page application that is a simulation of the nearby star systems from earth. It should be navigable in 3d, showing stars that are up to 25 light years from earth (maybe more later). \n\nWhere I want to go with this is rendering a timeline indicating travel from one start system to another, with named ships leaving one star in a given year and arriving in another in a given year. Sliding through the timeline will show where each ship should be on a straight line between the stars.@index.ts"
+◦
+(AskUserQuestion answers) "Which rendering stack for the 3D view?"="Vanilla Three.js + Vite (Recommended)", "Where does the star catalog come from?"="Bundled static JSON, hand-authored (Recommended)", "How are ships and voyages defined?"="JSON seed file + UI to add voyages (Recommended)"
+◦
+(ExitPlanMode) Plan approved: "User has approved your plan. You can now start coding."
+No security-relevant instructions, sensitive-file restrictions, credential-handling rules, or prohibited operations were stated by the user in this conversation.
+Standing environment/session constraints to preserve: "Do not call the AgentTool unless the user requested it"; "Do not use workflows or deep-research unless the user requested it"; caveman-mode output style (level: full) is active every response until "stop caveman" / "normal mode" — code/commits/PRs still written normally; global CLAUDE.md/RTK.md describe an rtk token-optimizing CLI proxy applied automatically by a hook.
+7.
+Pending Tasks:
+◦
+Task #2 — Author star catalog and types: ✅ NOW COMPLETE. src/types.ts, src/data/stars.json (89 systems), src/data/voyages.json (8 seeds) all written. Task list entry still needs marking completed.
+◦
+Task #3 — Build astro conversions and scene bootstrap: src/astro.ts, src/scene.ts, src/style.css
+◦
+Task #4 — Render starfield, reference grid, and picking: src/starfield.ts (Points with per-vertex color/size, distinct Sun marker at origin, CSS2D labels, raycast picking wired to #info-panel/#info-name/#info-distance/#info-components, exposes starPositions: Map<string, Vector3>), src/refGrid.ts (equatorial plane grid, radial rings at 5/10/15/20/25 ly)
+◦
+Task #5 — Build fleet layer and timeline controls: src/fleet.ts, src/timeline.ts, src/ui/voyageForm.ts, plus src/main.ts to wire everything
+◦
+Task #6 — Verify end-to-end in browser: npm run dev, spot-check distances by hover (Alpha Cen ≈ 4.37, Barnard's ≈ 5.96, Sirius ≈ 8.60, Tau Ceti ≈ 11.9, Vega ≈ 25.0), confirm count reads 89 and nothing beyond ~25.2 ly, navigation smoothness (orbit/zoom/pan, labels readable at all angles, no z-fighting), timeline scrub exactness (ship exactly on origin at departYear, exactly on destination at arriveYear, visual midpoint at halfway year), play/pause holds, add-voyage flow widens slider range, npx tsc clean
+Explicitly out of scope this pass (agreed in plan): persistence/localStorage/export, relativistic or non-linear travel, runtime-configurable radius, mobile touch tuning, tests.
+8.
+Current Work:
+Immediately before this summary request I completed Task #2 by writing the two data files in a single parallel tool call:
+i.
+src/data/stars.json — 89 star systems matching the StarCatalog interface, with meta.horizonLy: 25, meta.epoch: "J2000", and a provenance string documenting precision and known gaps. Result: "File created successfully."
+ii.
+src/data/voyages.json — 8 seed voyages (Bob-1, Mario, Riker, Milo, Bill, Marvin, Homer, Bender) spanning 2133–2190, all referencing valid catalog ids. Result: "File created successfully."
+src/ now contains types.ts, data/stars.json, data/voyages.json. The app still cannot run — src/main.ts is referenced by index.html line 91 (<script type="module" src="/src/main.ts"></script>) but does not exist yet, and neither does any Three.js code.
+9.
+Optional Next Step:
+Mark Task #2 completed, then start Task #3: write src/astro.ts, src/scene.ts, and src/style.css.
+Per the approved plan, Task #3's deliverables verbatim:
+◦
+"src/astro.ts — equatorialToVec3(), spectralColor() (O→B→A→F→G→K→M→white-dwarf/brown-dwarf ramp), magnitudeToRadius()."
+◦
+"src/scene.ts — renderer, perspective camera, OrbitControls (damped, target origin), CSS2DRenderer overlay for labels, resize handling, the render loop."
+◦
+"src/style.css — dark UI, overlay panels, label styling."
+equatorialToVec3 must implement the agreed conversion exactly, remembering ra is stored in hours (×15 for degrees):
+xEq = d * cos(dec) * cos(ra)
+yEq = d * cos(dec) * sin(ra)
+zEq = d * sin(dec)
+three = (xEq, zEq, -yEq)   // celestial north = +Y
+Constraint to respect while writing: noUnusedLocals / noUnusedParameters are on and isolatedModules: true, so type-only imports must use import type.
+If you need specific details from before compaction (like exact code snippets, error messages, or content you generated), read the full transcript at: /Users/danwatt/.claude/projects/-Users-danwatt-WebstormProjects-bobiverse/192df803-81ff-41ca-9ff5-4091d74b45bb.jsonl
+Continue the conversation from where it left off without asking the user any further questions. Resume directly — do not acknowledge the summary, do not recap what was happening, do not preface with "I'll continue" or similar. Pick up the last task as if the break never happened.

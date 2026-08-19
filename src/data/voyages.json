@@ -1,0 +1,66 @@
+[
+  {
+    "id": "bob-1",
+    "shipName": "Bob-1",
+    "originId": "sol",
+    "destinationId": "epsilon-eridani",
+    "departYear": 2133,
+    "arriveYear": 2145
+  },
+  {
+    "id": "mario",
+    "shipName": "Mario",
+    "originId": "epsilon-eridani",
+    "destinationId": "alpha-centauri",
+    "departYear": 2145,
+    "arriveYear": 2163
+  },
+  {
+    "id": "riker",
+    "shipName": "Riker",
+    "originId": "epsilon-eridani",
+    "destinationId": "sol",
+    "departYear": 2145,
+    "arriveYear": 2160
+  },
+  {
+    "id": "milo",
+    "shipName": "Milo",
+    "originId": "epsilon-eridani",
+    "destinationId": "40-eridani",
+    "departYear": 2145,
+    "arriveYear": 2165
+  },
+  {
+    "id": "bill",
+    "shipName": "Bill",
+    "originId": "epsilon-eridani",
+    "destinationId": "82-eridani",
+    "departYear": 2146,
+    "arriveYear": 2172
+  },
+  {
+    "id": "marvin",
+    "shipName": "Marvin",
+    "originId": "epsilon-eridani",
+    "destinationId": "delta-pavonis",
+    "departYear": 2146,
+    "arriveYear": 2178
+  },
+  {
+    "id": "homer",
+    "shipName": "Homer",
+    "originId": "sol",
+    "destinationId": "sirius",
+    "departYear": 2158,
+    "arriveYear": 2172
+  },
+  {
+    "id": "bender",
+    "shipName": "Bender",
+    "originId": "40-eridani",
+    "destinationId": "gj-876",
+    "departYear": 2166,
+    "arriveYear": 2190
+  }
+]

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bobiverse — Stars Within 25 Light-Years</title>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <!-- Top-left: scene info + display toggles -->
+    <div class="panel panel--top-left">
+      <h1>Local Bubble</h1>
+      <p class="subtle"><span id="star-count">0</span> systems within <span id="horizon-ly">25</span> ly</p>
+      <label class="check">
+        <input type="checkbox" id="toggle-all-labels" />
+        Label every system
+      </label>
+      <label class="check">
+        <input type="checkbox" id="toggle-grid" checked />
+        Reference grid &amp; rings
+      </label>
+      <label class="check">
+        <input type="checkbox" id="toggle-routes" checked />
+        Voyage routes
+      </label>
+    </div>
+
+    <!-- Top-right: selected system details -->
+    <div class="panel panel--top-right" id="info-panel" hidden>
+      <button class="close" id="info-close" aria-label="Close">&times;</button>
+      <h2 id="info-name">—</h2>
+      <p class="subtle" id="info-distance"></p>
+      <ul id="info-components"></ul>
+    </div>
+
+    <!-- Bottom: timeline -->
+    <div class="panel panel--bottom" id="timeline-panel">
+      <div class="timeline-row">
+        <button id="play-toggle" class="btn btn--play" title="Play / pause">▶</button>
+        <input type="range" id="year-slider" class="slider" />
+        <div class="year-box">
+          <input type="number" id="year-input" class="year-input" step="1" />
+          <span class="subtle">CE</span>
+        </div>
+        <div class="speeds" role="group" aria-label="Playback speed">
+          <button class="btn btn--speed" data-speed="0.25">0.25&times;</button>
+          <button class="btn btn--speed is-active" data-speed="1">1&times;</button>
+          <button class="btn btn--speed" data-speed="4">4&times;</button>
+        </div>
+      </div>
+      <div class="timeline-row timeline-row--fleet">
+        <ul id="fleet-list" class="fleet-list"></ul>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

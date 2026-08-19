@@ -1,0 +1,1416 @@
+{
+  "_comment": "Hand-authored identity layer for scripts/build-catalog.ts. Each entry is matched to the HYG catalogue by position (within 0.3 ly); on a match the overlay supplies id, name and note while HYG supplies astrometry and components. Entries with no HYG counterpart -- the WISE/2MASS brown dwarfs -- are carried through verbatim. Voyages reference these ids, so removing an entry can break src/data/voyages.json.",
+  "systems": [
+    {
+      "id": "sol",
+      "name": "Sol",
+      "ra": 0,
+      "dec": 0,
+      "distanceLy": 0,
+      "components": [
+        {
+          "name": "Sun",
+          "spectral": "G2V",
+          "absMag": 4.83
+        }
+      ],
+      "note": "Origin of the coordinate system."
+    },
+    {
+      "id": "alpha-centauri",
+      "name": "Alpha Centauri",
+      "ra": 14.66,
+      "dec": -60.8353,
+      "distanceLy": 4.365,
+      "components": [
+        {
+          "name": "α Cen A",
+          "spectral": "G2V",
+          "absMag": 4.38
+        },
+        {
+          "name": "α Cen B",
+          "spectral": "K1V",
+          "absMag": 5.71
+        },
+        {
+          "name": "Proxima Centauri",
+          "spectral": "M5.5Ve",
+          "absMag": 15.6
+        }
+      ],
+      "note": "Proxima is 4.246 ly and gravitationally bound but sits ~2° off A/B on the sky."
+    },
+    {
+      "id": "barnards-star",
+      "name": "Barnard's Star",
+      "ra": 17.9634,
+      "dec": 4.6933,
+      "distanceLy": 5.963,
+      "components": [
+        {
+          "name": "Barnard's Star",
+          "spectral": "M4.0V",
+          "absMag": 13.22
+        }
+      ],
+      "note": "Largest known proper motion of any star: 10.3\" per year."
+    },
+    {
+      "id": "luhman-16",
+      "name": "Luhman 16",
+      "ra": 10.7364,
+      "dec": -53.3186,
+      "distanceLy": 6.5,
+      "components": [
+        {
+          "name": "Luhman 16A",
+          "spectral": "L7.5"
+        },
+        {
+          "name": "Luhman 16B",
+          "spectral": "T0.5"
+        }
+      ],
+      "note": "Nearest brown dwarf binary. Discovered 2013."
+    },
+    {
+      "id": "wise-0855-0714",
+      "name": "WISE 0855−0714",
+      "ra": 8.9247,
+      "dec": -7.2372,
+      "distanceLy": 7.43,
+      "components": [
+        {
+          "name": "WISE 0855−0714",
+          "spectral": "Y4"
+        }
+      ],
+      "note": "Coldest known object outside the Solar System, around 250 K."
+    },
+    {
+      "id": "wolf-359",
+      "name": "Wolf 359",
+      "ra": 10.5611,
+      "dec": 7.0086,
+      "distanceLy": 7.856,
+      "components": [
+        {
+          "name": "Wolf 359",
+          "spectral": "M6.0V",
+          "absMag": 16.55
+        }
+      ]
+    },
+    {
+      "id": "lalande-21185",
+      "name": "Lalande 21185",
+      "ra": 11.0531,
+      "dec": 35.97,
+      "distanceLy": 8.307,
+      "components": [
+        {
+          "name": "Lalande 21185",
+          "spectral": "M2.0V",
+          "absMag": 10.44
+        }
+      ]
+    },
+    {
+      "id": "sirius",
+      "name": "Sirius",
+      "ra": 6.7525,
+      "dec": -16.7161,
+      "distanceLy": 8.601,
+      "components": [
+        {
+          "name": "Sirius A",
+          "spectral": "A1V",
+          "absMag": 1.42
+        },
+        {
+          "name": "Sirius B",
+          "spectral": "DA2",
+          "absMag": 11.18
+        }
+      ],
+      "note": "Brightest star in Earth's night sky."
+    },
+    {
+      "id": "luyten-726-8",
+      "name": "Luyten 726-8",
+      "ra": 1.6389,
+      "dec": -17.9572,
+      "distanceLy": 8.73,
+      "components": [
+        {
+          "name": "BL Ceti",
+          "spectral": "M5.5V",
+          "absMag": 15.4
+        },
+        {
+          "name": "UV Ceti",
+          "spectral": "M6.0V",
+          "absMag": 15.85
+        }
+      ],
+      "note": "UV Ceti is the prototype flare star."
+    },
+    {
+      "id": "ross-154",
+      "name": "Ross 154",
+      "ra": 18.8317,
+      "dec": -23.8364,
+      "distanceLy": 9.706,
+      "components": [
+        {
+          "name": "Ross 154",
+          "spectral": "M3.5V",
+          "absMag": 13.07
+        }
+      ]
+    },
+    {
+      "id": "ross-248",
+      "name": "Ross 248",
+      "ra": 23.6983,
+      "dec": 44.1772,
+      "distanceLy": 10.3,
+      "components": [
+        {
+          "name": "Ross 248",
+          "spectral": "M5.5V",
+          "absMag": 14.79
+        }
+      ],
+      "note": "Will be the nearest star to the Sun in roughly 36,000 years."
+    },
+    {
+      "id": "epsilon-eridani",
+      "name": "Epsilon Eridani",
+      "ra": 3.5483,
+      "dec": -9.4581,
+      "distanceLy": 10.475,
+      "components": [
+        {
+          "name": "ε Eridani",
+          "spectral": "K2V",
+          "absMag": 6.19
+        }
+      ],
+      "note": "Young star with a debris disk and a confirmed giant planet."
+    },
+    {
+      "id": "lacaille-9352",
+      "name": "Lacaille 9352",
+      "ra": 23.0947,
+      "dec": -35.8531,
+      "distanceLy": 10.72,
+      "components": [
+        {
+          "name": "GJ 887",
+          "spectral": "M0.5V",
+          "absMag": 9.75
+        }
+      ]
+    },
+    {
+      "id": "ross-128",
+      "name": "Ross 128",
+      "ra": 11.7961,
+      "dec": 0.8028,
+      "distanceLy": 11.007,
+      "components": [
+        {
+          "name": "Ross 128",
+          "spectral": "M4.0V",
+          "absMag": 13.51
+        }
+      ]
+    },
+    {
+      "id": "wise-1506-7027",
+      "name": "WISE 1506+7027",
+      "ra": 15.1103,
+      "dec": 70.4553,
+      "distanceLy": 11.09,
+      "components": [
+        {
+          "name": "WISE 1506+7027",
+          "spectral": "T6"
+        }
+      ]
+    },
+    {
+      "id": "ez-aquarii",
+      "name": "EZ Aquarii",
+      "ra": 22.6414,
+      "dec": -15.2769,
+      "distanceLy": 11.1,
+      "components": [
+        {
+          "name": "EZ Aqr A",
+          "spectral": "M5.0V",
+          "absMag": 15.64
+        },
+        {
+          "name": "EZ Aqr B",
+          "spectral": "M5.0V",
+          "absMag": 15.99
+        },
+        {
+          "name": "EZ Aqr C",
+          "spectral": "M5.5V",
+          "absMag": 16.9
+        }
+      ]
+    },
+    {
+      "id": "61-cygni",
+      "name": "61 Cygni",
+      "ra": 21.1092,
+      "dec": 38.7519,
+      "distanceLy": 11.4,
+      "components": [
+        {
+          "name": "61 Cyg A",
+          "spectral": "K5.0V",
+          "absMag": 7.49
+        },
+        {
+          "name": "61 Cyg B",
+          "spectral": "K7.0V",
+          "absMag": 8.31
+        }
+      ],
+      "note": "First star to have its parallax measured (Bessel, 1838)."
+    },
+    {
+      "id": "procyon",
+      "name": "Procyon",
+      "ra": 6.755,
+      "dec": 5.225,
+      "distanceLy": 11.46,
+      "components": [
+        {
+          "name": "Procyon A",
+          "spectral": "F5IV-V",
+          "absMag": 2.66
+        },
+        {
+          "name": "Procyon B",
+          "spectral": "DQZ",
+          "absMag": 13.2
+        }
+      ]
+    },
+    {
+      "id": "struve-2398",
+      "name": "Struve 2398",
+      "ra": 18.7139,
+      "dec": 59.6294,
+      "distanceLy": 11.53,
+      "components": [
+        {
+          "name": "GJ 725 A",
+          "spectral": "M3.0V",
+          "absMag": 11.16
+        },
+        {
+          "name": "GJ 725 B",
+          "spectral": "M3.5V",
+          "absMag": 11.96
+        }
+      ]
+    },
+    {
+      "id": "groombridge-34",
+      "name": "Groombridge 34",
+      "ra": 0.305,
+      "dec": 44.0231,
+      "distanceLy": 11.62,
+      "components": [
+        {
+          "name": "GX Andromedae",
+          "spectral": "M1.5V",
+          "absMag": 10.32
+        },
+        {
+          "name": "GQ Andromedae",
+          "spectral": "M3.5V",
+          "absMag": 13.29
+        }
+      ]
+    },
+    {
+      "id": "dx-cancri",
+      "name": "DX Cancri",
+      "ra": 8.4636,
+      "dec": 26.7761,
+      "distanceLy": 11.68,
+      "components": [
+        {
+          "name": "DX Cancri",
+          "spectral": "M6.5V",
+          "absMag": 17.01
+        }
+      ]
+    },
+    {
+      "id": "epsilon-indi",
+      "name": "Epsilon Indi",
+      "ra": 22.0503,
+      "dec": -56.79,
+      "distanceLy": 11.87,
+      "components": [
+        {
+          "name": "ε Indi A",
+          "spectral": "K5Ve",
+          "absMag": 6.89
+        },
+        {
+          "name": "ε Indi Ba",
+          "spectral": "T1"
+        },
+        {
+          "name": "ε Indi Bb",
+          "spectral": "T6"
+        }
+      ]
+    },
+    {
+      "id": "tau-ceti",
+      "name": "Tau Ceti",
+      "ra": 1.7343,
+      "dec": -15.9375,
+      "distanceLy": 11.912,
+      "components": [
+        {
+          "name": "τ Ceti",
+          "spectral": "G8.5V",
+          "absMag": 5.68
+        }
+      ],
+      "note": "Nearest single Sun-like star. Long-standing SETI target."
+    },
+    {
+      "id": "gj-1061",
+      "name": "GJ 1061",
+      "ra": 3.5981,
+      "dec": -44.5111,
+      "distanceLy": 11.98,
+      "components": [
+        {
+          "name": "GJ 1061",
+          "spectral": "M5.5V",
+          "absMag": 15.26
+        }
+      ]
+    },
+    {
+      "id": "yz-ceti",
+      "name": "YZ Ceti",
+      "ra": 1.2211,
+      "dec": -16.9986,
+      "distanceLy": 12.13,
+      "components": [
+        {
+          "name": "YZ Ceti",
+          "spectral": "M4.5V",
+          "absMag": 14.17
+        }
+      ]
+    },
+    {
+      "id": "luytens-star",
+      "name": "Luyten's Star",
+      "ra": 7.4567,
+      "dec": 5.2258,
+      "distanceLy": 12.36,
+      "components": [
+        {
+          "name": "GJ 273",
+          "spectral": "M3.5V",
+          "absMag": 11.97
+        }
+      ],
+      "note": "Lies only 1.2 ly from Procyon and appears beside it on the sky."
+    },
+    {
+      "id": "teegardens-star",
+      "name": "Teegarden's Star",
+      "ra": 2.7175,
+      "dec": 16.79,
+      "distanceLy": 12.5,
+      "components": [
+        {
+          "name": "SO 0253+1652",
+          "spectral": "M7.0V",
+          "absMag": 17.22
+        }
+      ]
+    },
+    {
+      "id": "scr-1845-6357",
+      "name": "SCR 1845−6357",
+      "ra": 18.7639,
+      "dec": -63.9564,
+      "distanceLy": 12.57,
+      "components": [
+        {
+          "name": "SCR 1845−6357 A",
+          "spectral": "M8.5V",
+          "absMag": 17.4
+        },
+        {
+          "name": "SCR 1845−6357 B",
+          "spectral": "T6"
+        }
+      ]
+    },
+    {
+      "id": "kapteyns-star",
+      "name": "Kapteyn's Star",
+      "ra": 5.1936,
+      "dec": -45.0169,
+      "distanceLy": 12.83,
+      "components": [
+        {
+          "name": "GJ 191",
+          "spectral": "sdM1",
+          "absMag": 10.89
+        }
+      ],
+      "note": "Halo subdwarf on a retrograde galactic orbit; roughly 11 Gyr old."
+    },
+    {
+      "id": "lacaille-8760",
+      "name": "Lacaille 8760",
+      "ra": 21.2733,
+      "dec": -38.8697,
+      "distanceLy": 12.95,
+      "components": [
+        {
+          "name": "AX Microscopii",
+          "spectral": "M0.0V",
+          "absMag": 9.75
+        }
+      ]
+    },
+    {
+      "id": "kruger-60",
+      "name": "Kruger 60",
+      "ra": 22.4794,
+      "dec": 57.6969,
+      "distanceLy": 13.08,
+      "components": [
+        {
+          "name": "Kruger 60 A",
+          "spectral": "M3.0V",
+          "absMag": 11.58
+        },
+        {
+          "name": "DO Cephei",
+          "spectral": "M4.0V",
+          "absMag": 13.4
+        }
+      ]
+    },
+    {
+      "id": "den-1048-3956",
+      "name": "DEN 1048−3956",
+      "ra": 10.81,
+      "dec": -39.9403,
+      "distanceLy": 13.17,
+      "components": [
+        {
+          "name": "DEN 1048−3956",
+          "spectral": "M8.5V",
+          "absMag": 17.4
+        }
+      ]
+    },
+    {
+      "id": "ross-614",
+      "name": "Ross 614",
+      "ra": 6.4964,
+      "dec": -2.8122,
+      "distanceLy": 13.35,
+      "components": [
+        {
+          "name": "Ross 614 A",
+          "spectral": "M4.5V",
+          "absMag": 13.09
+        },
+        {
+          "name": "Ross 614 B",
+          "spectral": "M8V",
+          "absMag": 16.9
+        }
+      ]
+    },
+    {
+      "id": "ugps-0722-0540",
+      "name": "UGPS 0722−0540",
+      "ra": 7.3775,
+      "dec": -5.6772,
+      "distanceLy": 13.4,
+      "components": [
+        {
+          "name": "UGPS 0722−0540",
+          "spectral": "T9"
+        }
+      ]
+    },
+    {
+      "id": "wolf-1061",
+      "name": "Wolf 1061",
+      "ra": 16.5031,
+      "dec": -12.6614,
+      "distanceLy": 14.05,
+      "components": [
+        {
+          "name": "GJ 628",
+          "spectral": "M3.5V",
+          "absMag": 11.93
+        }
+      ],
+      "note": "Hosts three known planets, one near the habitable zone."
+    },
+    {
+      "id": "van-maanens-star",
+      "name": "Van Maanen's Star",
+      "ra": 0.8194,
+      "dec": 5.3897,
+      "distanceLy": 14.07,
+      "components": [
+        {
+          "name": "GJ 35",
+          "spectral": "DZ8",
+          "absMag": 14.21
+        }
+      ],
+      "note": "Nearest solitary white dwarf."
+    },
+    {
+      "id": "gliese-1",
+      "name": "Gliese 1",
+      "ra": 0.0906,
+      "dec": -37.3572,
+      "distanceLy": 14.17,
+      "components": [
+        {
+          "name": "GJ 1",
+          "spectral": "M1.5V",
+          "absMag": 10.35
+        }
+      ]
+    },
+    {
+      "id": "wolf-424",
+      "name": "Wolf 424",
+      "ra": 12.5547,
+      "dec": 9.0208,
+      "distanceLy": 14.31,
+      "components": [
+        {
+          "name": "Wolf 424 A",
+          "spectral": "M5.5V",
+          "absMag": 15
+        },
+        {
+          "name": "Wolf 424 B",
+          "spectral": "M7V",
+          "absMag": 15.4
+        }
+      ]
+    },
+    {
+      "id": "tz-arietis",
+      "name": "TZ Arietis",
+      "ra": 2.0033,
+      "dec": 13.0525,
+      "distanceLy": 14.59,
+      "components": [
+        {
+          "name": "GJ 83.1",
+          "spectral": "M4.5V",
+          "absMag": 14.03
+        }
+      ]
+    },
+    {
+      "id": "gliese-687",
+      "name": "Gliese 687",
+      "ra": 17.6486,
+      "dec": 68.3403,
+      "distanceLy": 14.84,
+      "components": [
+        {
+          "name": "GJ 687",
+          "spectral": "M3.0V",
+          "absMag": 10.89
+        }
+      ]
+    },
+    {
+      "id": "gj-674",
+      "name": "GJ 674",
+      "ra": 17.4867,
+      "dec": -46.8942,
+      "distanceLy": 14.85,
+      "components": [
+        {
+          "name": "GJ 674",
+          "spectral": "M2.5V",
+          "absMag": 11.09
+        }
+      ]
+    },
+    {
+      "id": "gj-1245",
+      "name": "GJ 1245",
+      "ra": 19.9061,
+      "dec": 44.025,
+      "distanceLy": 14.96,
+      "components": [
+        {
+          "name": "V1581 Cyg A",
+          "spectral": "M5.5V",
+          "absMag": 15.17
+        },
+        {
+          "name": "V1581 Cyg B",
+          "spectral": "M6.0V",
+          "absMag": 16.75
+        }
+      ],
+      "hygMatch": "GJ 1245A"
+    },
+    {
+      "id": "lp-145-141",
+      "name": "LP 145-141",
+      "ra": 11.7761,
+      "dec": -64.8433,
+      "distanceLy": 15.06,
+      "components": [
+        {
+          "name": "GJ 440",
+          "spectral": "DQ6",
+          "absMag": 12.77
+        }
+      ]
+    },
+    {
+      "id": "gj-876",
+      "name": "GJ 876",
+      "ra": 22.8783,
+      "dec": -14.2639,
+      "distanceLy": 15.21,
+      "components": [
+        {
+          "name": "IL Aquarii",
+          "spectral": "M3.5V",
+          "absMag": 11.79
+        }
+      ],
+      "note": "Four known planets, including two in a 2:1 resonance."
+    },
+    {
+      "id": "gj-1002",
+      "name": "GJ 1002",
+      "ra": 0.1069,
+      "dec": -7.5333,
+      "distanceLy": 15.81,
+      "components": [
+        {
+          "name": "GJ 1002",
+          "spectral": "M5.5V",
+          "absMag": 15.4
+        }
+      ]
+    },
+    {
+      "id": "gj-412",
+      "name": "GJ 412",
+      "ra": 11.0528,
+      "dec": 43.5306,
+      "distanceLy": 15.83,
+      "components": [
+        {
+          "name": "GJ 412 A",
+          "spectral": "M0.5V",
+          "absMag": 10.34
+        },
+        {
+          "name": "WX Ursae Majoris",
+          "spectral": "M5.5V",
+          "absMag": 16.05
+        }
+      ]
+    },
+    {
+      "id": "groombridge-1618",
+      "name": "Groombridge 1618",
+      "ra": 10.1961,
+      "dec": 49.4728,
+      "distanceLy": 15.89,
+      "components": [
+        {
+          "name": "GJ 380",
+          "spectral": "K7.0V",
+          "absMag": 8.16
+        }
+      ]
+    },
+    {
+      "id": "ad-leonis",
+      "name": "AD Leonis",
+      "ra": 10.3011,
+      "dec": 19.87,
+      "distanceLy": 16.19,
+      "components": [
+        {
+          "name": "GJ 388",
+          "spectral": "M3.0V",
+          "absMag": 10.97
+        }
+      ],
+      "note": "Well-studied flare star."
+    },
+    {
+      "id": "gj-832",
+      "name": "GJ 832",
+      "ra": 21.5642,
+      "dec": -49.0092,
+      "distanceLy": 16.2,
+      "components": [
+        {
+          "name": "GJ 832",
+          "spectral": "M1.5V",
+          "absMag": 10.19
+        }
+      ]
+    },
+    {
+      "id": "den-0255-4700",
+      "name": "DEN 0255−4700",
+      "ra": 2.9294,
+      "dec": -47.0011,
+      "distanceLy": 16.2,
+      "components": [
+        {
+          "name": "DEN 0255−4700",
+          "spectral": "L7.5"
+        }
+      ]
+    },
+    {
+      "id": "gj-682",
+      "name": "GJ 682",
+      "ra": 17.6483,
+      "dec": -44.3222,
+      "distanceLy": 16.33,
+      "components": [
+        {
+          "name": "GJ 682",
+          "spectral": "M3.5V",
+          "absMag": 12.11
+        }
+      ]
+    },
+    {
+      "id": "40-eridani",
+      "name": "40 Eridani",
+      "ra": 4.2586,
+      "dec": -7.6533,
+      "distanceLy": 16.34,
+      "components": [
+        {
+          "name": "40 Eri A",
+          "spectral": "K0.5V",
+          "absMag": 5.92
+        },
+        {
+          "name": "40 Eri B",
+          "spectral": "DA2.9",
+          "absMag": 11.01
+        },
+        {
+          "name": "40 Eri C",
+          "spectral": "M4.5V",
+          "absMag": 12.75
+        }
+      ],
+      "note": "Also Omicron² Eridani. First white dwarf ever identified."
+    },
+    {
+      "id": "ev-lacertae",
+      "name": "EV Lacertae",
+      "ra": 22.7906,
+      "dec": 44.3339,
+      "distanceLy": 16.47,
+      "components": [
+        {
+          "name": "GJ 873",
+          "spectral": "M3.5V",
+          "absMag": 11.66
+        }
+      ]
+    },
+    {
+      "id": "70-ophiuchi",
+      "name": "70 Ophiuchi",
+      "ra": 18.0556,
+      "dec": 2.5006,
+      "distanceLy": 16.59,
+      "components": [
+        {
+          "name": "70 Oph A",
+          "spectral": "K0V",
+          "absMag": 5.71
+        },
+        {
+          "name": "70 Oph B",
+          "spectral": "K5V",
+          "absMag": 7.38
+        }
+      ]
+    },
+    {
+      "id": "altair",
+      "name": "Altair",
+      "ra": 19.8464,
+      "dec": 8.8683,
+      "distanceLy": 16.73,
+      "components": [
+        {
+          "name": "Altair",
+          "spectral": "A7Vn",
+          "absMag": 2.22
+        }
+      ],
+      "note": "Rotates near breakup speed; visibly oblate."
+    },
+    {
+      "id": "gj-1005",
+      "name": "GJ 1005",
+      "ra": 0.2683,
+      "dec": -16.1319,
+      "distanceLy": 16.75,
+      "components": [
+        {
+          "name": "GJ 1005 A",
+          "spectral": "M3.5V",
+          "absMag": 12.5
+        },
+        {
+          "name": "GJ 1005 B",
+          "spectral": "M6V",
+          "absMag": 15.4
+        }
+      ],
+      "hygMatch": "GJ 1005A"
+    },
+    {
+      "id": "gj-1116",
+      "name": "GJ 1116",
+      "ra": 8.9708,
+      "dec": 19.7631,
+      "distanceLy": 16.9,
+      "components": [
+        {
+          "name": "GJ 1116 A",
+          "spectral": "M5.5V",
+          "absMag": 15.4
+        },
+        {
+          "name": "GJ 1116 B",
+          "spectral": "M6.5V",
+          "absMag": 16.3
+        }
+      ]
+    },
+    {
+      "id": "2mass-0939-2448",
+      "name": "2MASS 0939−2448",
+      "ra": 9.6597,
+      "dec": -24.8078,
+      "distanceLy": 17.4,
+      "components": [
+        {
+          "name": "2MASS 0939−2448",
+          "spectral": "T8"
+        }
+      ]
+    },
+    {
+      "id": "gj-3379",
+      "name": "GJ 3379",
+      "ra": 5.9519,
+      "dec": 1.0181,
+      "distanceLy": 17.5,
+      "components": [
+        {
+          "name": "G 99-49",
+          "spectral": "M3.5V",
+          "absMag": 12.7
+        }
+      ]
+    },
+    {
+      "id": "gj-445",
+      "name": "GJ 445",
+      "ra": 11.7947,
+      "dec": 78.6931,
+      "distanceLy": 17.55,
+      "components": [
+        {
+          "name": "AC +79 3888",
+          "spectral": "M3.5V",
+          "absMag": 12.28
+        }
+      ],
+      "note": "Voyager 1 passes within ~1.6 ly of this star in about 40,000 years."
+    },
+    {
+      "id": "gj-526",
+      "name": "Gliese 526",
+      "ra": 13.7619,
+      "dec": 14.8914,
+      "distanceLy": 17.73,
+      "components": [
+        {
+          "name": "GJ 526",
+          "spectral": "M1.5V",
+          "absMag": 9.79
+        }
+      ]
+    },
+    {
+      "id": "stein-2051",
+      "name": "Stein 2051",
+      "ra": 4.5197,
+      "dec": 58.9769,
+      "distanceLy": 18,
+      "components": [
+        {
+          "name": "Stein 2051 A",
+          "spectral": "M4V",
+          "absMag": 12.4
+        },
+        {
+          "name": "Stein 2051 B",
+          "spectral": "DC5",
+          "absMag": 13.4
+        }
+      ]
+    },
+    {
+      "id": "gj-251",
+      "name": "Gliese 251",
+      "ra": 6.9136,
+      "dec": 33.2681,
+      "distanceLy": 18.2,
+      "components": [
+        {
+          "name": "GJ 251",
+          "spectral": "M3.0V",
+          "absMag": 11.24
+        }
+      ]
+    },
+    {
+      "id": "gj-205",
+      "name": "Gliese 205",
+      "ra": 5.5242,
+      "dec": -3.6772,
+      "distanceLy": 18.5,
+      "components": [
+        {
+          "name": "GJ 205",
+          "spectral": "M1.5V",
+          "absMag": 9.19
+        }
+      ]
+    },
+    {
+      "id": "gj-229",
+      "name": "Gliese 229",
+      "ra": 6.1761,
+      "dec": -21.8644,
+      "distanceLy": 18.8,
+      "components": [
+        {
+          "name": "GJ 229 A",
+          "spectral": "M1.0V",
+          "absMag": 9.34
+        },
+        {
+          "name": "Gliese 229 B",
+          "spectral": "T7"
+        }
+      ],
+      "note": "GJ 229 B was the first unambiguously confirmed brown dwarf (1995)."
+    },
+    {
+      "id": "sigma-draconis",
+      "name": "Sigma Draconis",
+      "ra": 19.5397,
+      "dec": 69.6614,
+      "distanceLy": 18.8,
+      "components": [
+        {
+          "name": "Alsafi",
+          "spectral": "K0V",
+          "absMag": 5.87
+        }
+      ]
+    },
+    {
+      "id": "wise-0350-5658",
+      "name": "WISE 0350−5658",
+      "ra": 3.8481,
+      "dec": -56.9722,
+      "distanceLy": 18,
+      "components": [
+        {
+          "name": "WISE 0350−5658",
+          "spectral": "Y1"
+        }
+      ]
+    },
+    {
+      "id": "gj-693",
+      "name": "Gliese 693",
+      "ra": 17.7761,
+      "dec": -57.3192,
+      "distanceLy": 19,
+      "components": [
+        {
+          "name": "GJ 693",
+          "spectral": "M2.0V",
+          "absMag": 11.7
+        }
+      ]
+    },
+    {
+      "id": "gj-570",
+      "name": "Gliese 570",
+      "ra": 14.9578,
+      "dec": -21.4156,
+      "distanceLy": 19.24,
+      "components": [
+        {
+          "name": "GJ 570 A",
+          "spectral": "K4V",
+          "absMag": 6.86
+        },
+        {
+          "name": "GJ 570 B",
+          "spectral": "M1.5V",
+          "absMag": 9.6
+        },
+        {
+          "name": "GJ 570 C",
+          "spectral": "M3V",
+          "absMag": 11.2
+        },
+        {
+          "name": "GJ 570 D",
+          "spectral": "T7.5"
+        }
+      ]
+    },
+    {
+      "id": "gj-908",
+      "name": "Gliese 908",
+      "ra": 23.8203,
+      "dec": 2.4011,
+      "distanceLy": 19.3,
+      "components": [
+        {
+          "name": "GJ 908",
+          "spectral": "M1.0V",
+          "absMag": 10.1
+        }
+      ]
+    },
+    {
+      "id": "gj-588",
+      "name": "Gliese 588",
+      "ra": 15.5369,
+      "dec": -41.2756,
+      "distanceLy": 19.3,
+      "components": [
+        {
+          "name": "GJ 588",
+          "spectral": "M2.5V",
+          "absMag": 10.4
+        }
+      ]
+    },
+    {
+      "id": "gj-752",
+      "name": "Gliese 752",
+      "ra": 19.2819,
+      "dec": 5.1689,
+      "distanceLy": 19.3,
+      "components": [
+        {
+          "name": "GJ 752 A",
+          "spectral": "M3.0V",
+          "absMag": 10.3
+        },
+        {
+          "name": "Van Biesbroeck's Star",
+          "spectral": "M8.0V",
+          "absMag": 18.6
+        }
+      ],
+      "note": "VB 10 is one of the least luminous stars known."
+    },
+    {
+      "id": "gj-754",
+      "name": "Gliese 754",
+      "ra": 19.3467,
+      "dec": -45.5583,
+      "distanceLy": 19.3,
+      "components": [
+        {
+          "name": "GJ 754",
+          "spectral": "M4.5V",
+          "absMag": 13
+        }
+      ]
+    },
+    {
+      "id": "eta-cassiopeiae",
+      "name": "Eta Cassiopeiae",
+      "ra": 0.8181,
+      "dec": 57.8156,
+      "distanceLy": 19.32,
+      "components": [
+        {
+          "name": "Achird A",
+          "spectral": "G0V",
+          "absMag": 4.59
+        },
+        {
+          "name": "Achird B",
+          "spectral": "K7V",
+          "absMag": 7.5
+        }
+      ]
+    },
+    {
+      "id": "36-ophiuchi",
+      "name": "36 Ophiuchi",
+      "ra": 17.2622,
+      "dec": -26.6017,
+      "distanceLy": 19.5,
+      "components": [
+        {
+          "name": "36 Oph A",
+          "spectral": "K1V",
+          "absMag": 5.96
+        },
+        {
+          "name": "36 Oph B",
+          "spectral": "K1V",
+          "absMag": 6.07
+        },
+        {
+          "name": "36 Oph C",
+          "spectral": "K5V",
+          "absMag": 7.5
+        }
+      ]
+    },
+    {
+      "id": "yz-canis-minoris",
+      "name": "YZ Canis Minoris",
+      "ra": 7.7445,
+      "dec": 3.5525,
+      "distanceLy": 19.53,
+      "components": [
+        {
+          "name": "GJ 285",
+          "spectral": "M4.5V",
+          "absMag": 12.8
+        }
+      ]
+    },
+    {
+      "id": "82-eridani",
+      "name": "82 Eridani",
+      "ra": 3.3319,
+      "dec": -43.07,
+      "distanceLy": 19.71,
+      "components": [
+        {
+          "name": "e Eridani",
+          "spectral": "G8V",
+          "absMag": 4.99
+        }
+      ]
+    },
+    {
+      "id": "delta-pavonis",
+      "name": "Delta Pavonis",
+      "ra": 20.14,
+      "dec": -66.1819,
+      "distanceLy": 19.92,
+      "components": [
+        {
+          "name": "δ Pavonis",
+          "spectral": "G8IV",
+          "absMag": 3.56
+        }
+      ],
+      "note": "Nearest subgiant; a frequent target in habitability studies."
+    },
+    {
+      "id": "hr-7703",
+      "name": "HR 7703",
+      "ra": 20.1867,
+      "dec": -36.1011,
+      "distanceLy": 20.31,
+      "components": [
+        {
+          "name": "GJ 783 A",
+          "spectral": "K3V",
+          "absMag": 6.4
+        },
+        {
+          "name": "GJ 783 B",
+          "spectral": "M4V",
+          "absMag": 12.8
+        }
+      ],
+      "hygMatch": "Gl 783A"
+    },
+    {
+      "id": "eq-pegasi",
+      "name": "EQ Pegasi",
+      "ra": 23.5497,
+      "dec": 19.9403,
+      "distanceLy": 20.4,
+      "components": [
+        {
+          "name": "EQ Peg A",
+          "spectral": "M4V",
+          "absMag": 12.7
+        },
+        {
+          "name": "EQ Peg B",
+          "spectral": "M6V",
+          "absMag": 15.4
+        }
+      ]
+    },
+    {
+      "id": "gj-892",
+      "name": "Gliese 892",
+      "ra": 23.2214,
+      "dec": 57.1683,
+      "distanceLy": 21.34,
+      "components": [
+        {
+          "name": "HD 219134",
+          "spectral": "K3V",
+          "absMag": 6.5
+        }
+      ],
+      "note": "Hosts a transiting super-Earth; nearest known transiting planet host."
+    },
+    {
+      "id": "xi-bootis",
+      "name": "Xi Bootis",
+      "ra": 14.8564,
+      "dec": 19.1006,
+      "distanceLy": 21.9,
+      "components": [
+        {
+          "name": "ξ Boo A",
+          "spectral": "G7Ve",
+          "absMag": 5.55
+        },
+        {
+          "name": "ξ Boo B",
+          "spectral": "K5Ve",
+          "absMag": 7.5
+        }
+      ]
+    },
+    {
+      "id": "beta-hydri",
+      "name": "Beta Hydri",
+      "ra": 0.4292,
+      "dec": -77.2542,
+      "distanceLy": 24.33,
+      "components": [
+        {
+          "name": "β Hydri",
+          "spectral": "G0V",
+          "absMag": 3.45
+        }
+      ],
+      "note": "Close analogue of the Sun's future as it leaves the main sequence."
+    },
+    {
+      "id": "107-piscium",
+      "name": "107 Piscium",
+      "ra": 1.7083,
+      "dec": 20.2686,
+      "distanceLy": 24.4,
+      "components": [
+        {
+          "name": "107 Piscium",
+          "spectral": "K1V",
+          "absMag": 6.02
+        }
+      ]
+    },
+    {
+      "id": "vega",
+      "name": "Vega",
+      "ra": 18.6156,
+      "dec": 38.7836,
+      "distanceLy": 25.04,
+      "components": [
+        {
+          "name": "Vega",
+          "spectral": "A0V",
+          "absMag": 0.58
+        }
+      ],
+      "note": "Sits essentially on the 25 ly shell. Photometric zero point for the Vega magnitude system."
+    },
+    {
+      "id": "fomalhaut",
+      "name": "Fomalhaut",
+      "ra": 22.9608,
+      "dec": -29.6222,
+      "distanceLy": 25.13,
+      "components": [
+        {
+          "name": "Fomalhaut A",
+          "spectral": "A3V",
+          "absMag": 1.72
+        },
+        {
+          "name": "TW Piscis Austrini",
+          "spectral": "K4Ve",
+          "absMag": 7.08
+        },
+        {
+          "name": "Fomalhaut C",
+          "spectral": "M4V",
+          "absMag": 13
+        }
+      ],
+      "note": "Just outside 25 ly. Famous for its sharply defined debris ring."
+    }
+  ]
+}

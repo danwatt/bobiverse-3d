@@ -1,0 +1,366 @@
+:root {
+  --bg: #05060c;
+  --panel-bg: rgba(11, 15, 26, 0.82);
+  --panel-border: rgba(120, 155, 220, 0.22);
+  --text: #dce4f5;
+  --text-dim: #7f8ba6;
+  --accent: #6fb3ff;
+  --accent-dim: rgba(111, 179, 255, 0.35);
+  --danger: #ff7a6b;
+  --radius: 10px;
+  --font: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  position: fixed;
+  inset: 0;
+}
+
+#app canvas {
+  display: block;
+}
+
+/* The CSS2D overlay must not intercept orbit drags. Individual labels opt back in. */
+.label-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+/* ---------- Labels drawn in world space ---------- */
+
+.star-label {
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: rgba(220, 231, 255, 0.9);
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.95), 0 0 2px rgba(0, 0, 0, 1);
+  white-space: nowrap;
+  transform: translate(10px, -2px);
+  user-select: none;
+}
+
+.star-label--sun {
+  color: #ffe9b0;
+  font-weight: 600;
+}
+
+.star-label--selected {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.ship-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: #8affd0;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.95);
+  white-space: nowrap;
+  transform: translate(10px, -2px);
+  user-select: none;
+}
+
+.ship-label .pct {
+  color: rgba(138, 255, 208, 0.55);
+  margin-left: 4px;
+}
+
+/* ---------- Overlay panels ---------- */
+
+.panel {
+  position: fixed;
+  z-index: 10;
+  padding: 14px 16px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(8px);
+}
+
+.panel h1 {
+  margin: 0 0 2px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.panel h2 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.subtle {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 12px;
+}
+
+.panel--top-left {
+  top: 16px;
+  left: 16px;
+  width: 210px;
+}
+
+.panel--top-right {
+  top: 16px;
+  right: 16px;
+  width: 268px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+.panel--bottom {
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 9px;
+  color: var(--text-dim);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.check:hover {
+  color: var(--text);
+}
+
+.check input {
+  accent-color: var(--accent);
+  margin: 0;
+  cursor: pointer;
+}
+
+/* ---------- Info panel ---------- */
+
+.close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  color: var(--text-dim);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: var(--text);
+}
+
+#info-components {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+#info-components li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 5px 0;
+  border-top: 1px solid rgba(120, 155, 220, 0.12);
+  font-size: 12px;
+}
+
+.swatch {
+  flex: 0 0 auto;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.comp-name {
+  flex: 1 1 auto;
+}
+
+.comp-meta {
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.info-note {
+  margin: 10px 0 0;
+  color: var(--text-dim);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+/* ---------- Timeline ---------- */
+
+.timeline-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.timeline-row--fleet {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(120, 155, 220, 0.14);
+  align-items: flex-start;
+}
+
+.btn {
+  padding: 5px 10px;
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  border-color: var(--accent-dim);
+  background: rgba(111, 179, 255, 0.12);
+}
+
+.btn--play {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 30px;
+  font-size: 13px;
+}
+
+.btn--speed.is-active {
+  border-color: var(--accent-dim);
+  background: rgba(111, 179, 255, 0.2);
+  color: var(--accent);
+}
+
+.speeds {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 4px;
+}
+
+.slider {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 4px;
+  margin: 0;
+  border-radius: 2px;
+  background: rgba(120, 155, 220, 0.22);
+  accent-color: var(--accent);
+  appearance: none;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb {
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(111, 179, 255, 0.7);
+  appearance: none;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+}
+
+.year-box {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.year-input {
+  width: 68px;
+  padding: 4px 6px;
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  text-align: right;
+}
+
+.fleet-list {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fleet-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border: 1px solid rgba(120, 155, 220, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.fleet-item .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-dim);
+}
+
+.fleet-item[data-phase='transit'] {
+  border-color: rgba(138, 255, 208, 0.35);
+}
+
+.fleet-item[data-phase='transit'] .dot {
+  background: #8affd0;
+  box-shadow: 0 0 6px #8affd0;
+}
+
+.fleet-item[data-phase='arrived'] .dot {
+  background: var(--accent);
+}
+
+.fleet-item .route {
+  color: var(--text-dim);
+  font-family: var(--mono);
+}
+
+[hidden] {
+  display: none !important;
+}

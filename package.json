@@ -1,0 +1,22 @@
+{
+  "name": "bobiverse",
+  "version": "1.0.0",
+  "description": "3D map of nearby star systems with an interstellar voyage timeline",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc",
+    "catalog": "node --experimental-strip-types scripts/build-catalog.ts --csv data-src/hyg_v44.csv"
+  },
+  "dependencies": {
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.180.0",
+    "typescript": "^6.0.3",
+    "vite": "^7.1.5"
+  },
+  "private": true
+}

@@ -1429,6 +1429,21 @@
       "hygMatch": "13 Gam Lep"
     },
     {
+      "id": "eta-leporis",
+      "name": "Eta Leporis",
+      "ra": 5.9401,
+      "dec": -14.1677,
+      "distanceLy": 48.528,
+      "components": [
+        {
+          "name": "η Lep",
+          "spectral": "F1V",
+          "absMag": 2.85
+        }
+      ],
+      "note": "HYG row 28032 (HIP 28103 / HD 40136), carried by hand because 48.5 ly puts it outside the 35 ly build horizon — the numbers here are the catalogue's, not estimates."
+    },
+    {
       "id": "gamma-pavonis",
       "name": "Gamma Pavonis",
       "hygMatch": "Gam Pav"

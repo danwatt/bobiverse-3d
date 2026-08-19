@@ -11,7 +11,7 @@
     <!-- Top-left: scene info + display toggles -->
     <div class="panel panel--top-left">
       <h1>Local Bubble</h1>
-      <p class="subtle"><span id="star-count">0</span> systems within <span id="horizon-ly">25</span> ly</p>
+      <p class="subtle"><span id="star-count">0</span> systems out to <span id="horizon-ly">25</span> ly</p>
       <div class="field">
         <span class="field-label">Label</span>
         <div class="seg" id="label-mode" role="group" aria-label="Which systems to label">
@@ -28,6 +28,7 @@
         <input type="checkbox" id="toggle-routes" checked />
         Voyage routes
       </label>
+      <button class="btn btn--wide" id="tree-open">Bob family tree</button>
       <p class="credit">
         Stars:
         <a href="https://codeberg.org/astronexus/hyg" target="_blank" rel="noopener">HYG</a> ·
@@ -47,6 +48,26 @@
         <h3 class="info-heading">Bobs in system</h3>
         <ul id="info-bobs" class="bob-list"></ul>
       </div>
+      <div id="info-inbound" hidden>
+        <h3 class="info-heading">En route</h3>
+        <ul id="info-arrivals" class="bob-list bob-list--inbound"></ul>
+      </div>
+    </div>
+
+    <!-- Centre: Bob lineage -->
+    <div class="panel panel--tree" id="tree-panel" role="dialog" aria-label="Bob family tree" hidden>
+      <button class="close" id="tree-close" aria-label="Close">&times;</button>
+      <h2>Bob family tree</h2>
+      <p class="subtle">
+        <span id="tree-count">0</span> replicants · click one to jump to where it was built
+      </p>
+      <div class="tree-legend">
+        <span class="ft-key ft-key--alive">Active</span>
+        <span class="ft-key ft-key--lost">Destroyed</span>
+        <span class="ft-key ft-key--pending">Not yet built</span>
+        <span class="ft-key ft-key--year">as of <span id="tree-year">—</span> CE</span>
+      </div>
+      <div class="tree-body" id="tree-body"></div>
     </div>
 
     <!-- Bottom: timeline -->

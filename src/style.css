@@ -332,11 +332,145 @@ body {
   white-space: nowrap;
 }
 
+/* Inbound ships are elsewhere on the map, so they read in the map's own blue rather than the
+   green used for Bobs actually in the system. */
+.bob-list--inbound li {
+  border-color: var(--accent-dim);
+  background: rgba(111, 179, 255, 0.1);
+  color: var(--accent);
+}
+
 .info-note {
   margin: 10px 0 0;
   color: var(--text-dim);
   font-size: 11px;
   line-height: 1.45;
+}
+
+/* ---------- Family tree ---------- */
+
+.btn--wide {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.panel--tree {
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  /* Wide enough for the deepest column plus its labels; see LABEL_ROOM in familyTree.ts. */
+  width: min(700px, calc(100vw - 48px));
+  max-height: min(76vh, 760px);
+  transform: translate(-50%, -50%);
+}
+
+.tree-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-top: 10px;
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+/* Each key repeats the dot styling of the state it names. */
+.ft-key::before {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 5px;
+  border-radius: 50%;
+  content: '';
+}
+
+.ft-key--alive::before {
+  background: #8affd0;
+  box-shadow: 0 0 6px #8affd0;
+}
+
+.ft-key--lost::before {
+  background: var(--danger);
+}
+
+.ft-key--pending::before {
+  background: rgba(127, 139, 166, 0.45);
+}
+
+.ft-key--year {
+  margin-left: auto;
+  font-family: var(--mono);
+}
+
+.tree-body {
+  flex: 1 1 auto;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(120, 155, 220, 0.14);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.ft-svg {
+  display: block;
+}
+
+.ft-edge {
+  fill: none;
+  stroke: rgba(120, 155, 220, 0.35);
+  stroke-width: 1;
+}
+
+.ft-edge[data-phase='pending'] {
+  stroke: rgba(120, 155, 220, 0.12);
+  stroke-dasharray: 2 3;
+}
+
+.ft-node {
+  cursor: pointer;
+  outline: none;
+}
+
+.ft-dot {
+  fill: #8affd0;
+  filter: drop-shadow(0 0 4px rgba(138, 255, 208, 0.8));
+}
+
+.ft-label {
+  fill: var(--text);
+  font-family: var(--font);
+  font-size: 11px;
+}
+
+.ft-node[data-phase='pending'] .ft-dot {
+  fill: rgba(127, 139, 166, 0.45);
+  filter: none;
+}
+
+.ft-node[data-phase='pending'] .ft-label {
+  fill: rgba(127, 139, 166, 0.55);
+}
+
+.ft-node[data-phase='lost'] .ft-dot {
+  fill: var(--danger);
+  filter: none;
+}
+
+.ft-node[data-phase='lost'] .ft-label {
+  fill: rgba(255, 122, 107, 0.75);
+  text-decoration: line-through;
+}
+
+.ft-node:hover .ft-label,
+.ft-node:focus-visible .ft-label {
+  fill: var(--accent);
+}
+
+.ft-node:hover .ft-dot,
+.ft-node:focus-visible .ft-dot {
+  stroke: var(--accent);
+  stroke-width: 2;
 }
 
 /* ---------- Timeline ---------- */

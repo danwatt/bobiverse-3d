@@ -5,6 +5,7 @@ import { createBackgroundStars } from './backgroundStars';
 import { bobs, systemIds as bookSystemIds } from './data/bobiverse';
 import starsJson from './data/stars.json';
 import voyagesJson from './data/voyages.json';
+import { createFamilyTree } from './familyTree';
 import { createFleet } from './fleet';
 import { createRefGrid } from './refGrid';
 import { createViewer } from './scene';
@@ -48,7 +49,11 @@ const fleet = createFleet(viewer, {
 });
 
 byId('star-count').textContent = String(catalog.systems.length);
-byId('horizon-ly').textContent = String(catalog.meta.horizonLy);
+// The catalogue reaches past its own build horizon wherever the overlay carries a system in by
+// hand — Eta Leporis sits at 48.5 ly — so the header reports the real extent rather than
+// `meta.horizonLy`, which only describes the HYG cut.
+const furthestLy = catalog.systems.reduce((far, star) => Math.max(far, star.distanceLy), 0);
+byId('horizon-ly').textContent = String(Math.ceil(furthestLy));
 
 // ---------- Display toggles ----------
 
@@ -76,9 +81,14 @@ const infoDistance = byId('info-distance');
 const infoComponents = byId<HTMLUListElement>('info-components');
 const infoPresence = byId('info-presence');
 const infoBobs = byId<HTMLUListElement>('info-bobs');
+const infoInbound = byId('info-inbound');
+const infoArrivals = byId<HTMLUListElement>('info-arrivals');
 
 /** The system whose details are on screen, so the panel can follow the year. */
 let selectedStar: Star | null = null;
+
+/** Every voyage as of the year on the timeline, shared by the info panel and the fleet row. */
+let latestStates: ShipState[] = [];
 
 // The note has no slot in the markup because most systems don't have one.
 const infoNote = document.createElement('p');
@@ -108,6 +118,44 @@ function renderPresence(): void {
     infoBobs.append(item);
   }
   infoPresence.hidden = false;
+}
+
+/**
+ * Ships currently flying towards the selected system.
+ *
+ * Their markers are out in the middle of nowhere, so without this the panel says a system is
+ * empty right up to the year a fleet lands in it.
+ */
+function renderInbound(): void {
+  const star = selectedStar;
+  const heading = star
+    ? latestStates.filter(
+        (state) => state.phase === 'transit' && state.voyage.destinationId === star.id,
+      )
+    : [];
+
+  if (heading.length === 0) {
+    infoInbound.hidden = true;
+    return;
+  }
+
+  // Soonest arrival first, so the list reads as the order they turn up in.
+  heading.sort((a, b) => a.voyage.arriveYear - b.voyage.arriveYear);
+
+  infoArrivals.replaceChildren();
+  for (const state of heading) {
+    const name = document.createElement('span');
+    name.textContent = state.voyage.shipName;
+
+    const eta = document.createElement('span');
+    eta.className = 'comp-meta';
+    eta.textContent = `ETA ${Math.floor(state.voyage.arriveYear)} · ${Math.round(state.progress * 100)}%`;
+
+    const item = document.createElement('li');
+    item.append(name, eta);
+    infoArrivals.append(item);
+  }
+  infoInbound.hidden = false;
 }
 
 function showStar(star: Star | null): void {
@@ -154,6 +202,7 @@ function showStar(star: Star | null): void {
   infoNote.textContent = star.note ?? '';
   infoNote.hidden = star.note === undefined;
   renderPresence();
+  renderInbound();
   infoPanel.hidden = false;
 }
 
@@ -227,7 +276,6 @@ function renderFleetList(states: ShipState[]): void {
 
 // Clicking a chip flies the orbit centre to that ship — the only way to find one
 // mid-transit without hunting for it.
-let latestStates: ShipState[] = [];
 fleetList.addEventListener('click', (event) => {
   const item = (event.target as HTMLElement).closest<HTMLLIElement>('.fleet-item');
   const id = item?.dataset.voyage;
@@ -240,18 +288,50 @@ fleetList.addEventListener('click', (event) => {
   if (target) viewer.focusOn(target);
 });
 
+// ---------- Family tree ----------
+
+const treeYear = byId('tree-year');
+const familyTree = createFamilyTree(bobs, {
+  host: byId('tree-body'),
+  panel: byId('tree-panel'),
+  systemName,
+});
+
+byId('tree-count').textContent = String(bobs.length);
+byId('tree-open').addEventListener('click', () => familyTree.toggle());
+byId('tree-close').addEventListener('click', () => familyTree.close());
+
+// Picking a Bob shows the system it was built in and flies there, which is the only link
+// between a name in the tree and a point on the map.
+familyTree.onSelect((bob) => {
+  const star = systemsById.get(bob.atId);
+  if (!star) return;
+  starfield.select(bob.atId);
+  const position = starfield.positions.get(bob.atId);
+  if (position) viewer.focusOn(position);
+  familyTree.close();
+});
+
 // ---------- Timeline ----------
 
 const timeline = createTimeline(viewer, voyages);
+
+function showYear(year: number): void {
+  familyTree.setYear(year);
+  treeYear.textContent = String(Math.floor(year));
+}
 
 timeline.onChange((year) => {
   latestStates = fleet.update(year);
   renderFleetList(latestStates);
   renderPresence();
+  renderInbound();
+  showYear(year);
 });
 
 // The timeline only emits on change, so paint the opening year explicitly.
 latestStates = fleet.update(timeline.getYear());
 renderFleetList(latestStates);
+showYear(timeline.getYear());
 
 viewer.start();

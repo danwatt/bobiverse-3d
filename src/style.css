@@ -164,7 +164,7 @@ body {
 .panel--top-left {
   top: 16px;
   left: 16px;
-  width: 210px;
+  width: 250px;
 }
 
 .panel--top-right {
@@ -338,6 +338,27 @@ body {
   border-color: var(--accent-dim);
   background: rgba(111, 179, 255, 0.1);
   color: var(--accent);
+}
+
+/* Planets, unlike Bobs, carry a sentence of prose, so they stack instead of sitting in pills. */
+.world-list {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.world-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 0;
+  font-size: 11px;
+  color: #8affd0;
+}
+
+.world-list .comp-meta {
+  color: var(--text-dim);
+  line-height: 1.4;
 }
 
 .info-note {

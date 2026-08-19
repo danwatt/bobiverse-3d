@@ -42,6 +42,24 @@ function shipColor(index: number): Color {
   return new Color().setHSL(((index * 137.508) % 360) / 360, 0.72, 0.68);
 }
 
+/**
+ * Fraction of the route covered after `t` of the trip's duration (both 0–1).
+ *
+ * Ships fly a flip-and-burn profile at constant acceleration `a`: they burn to the midpoint,
+ * flip, and decelerate into the destination, so distance goes as ½at² out of the origin and
+ * mirrors that coming in. That puts them a quarter of the way along at the halfway point, not
+ * halfway — the marker crawls at both ends of the route and sprints through the middle.
+ *
+ * `noDeceleration` ships never flip, so they are still under a single ½at² curve at arrival.
+ * With the departure and arrival years fixed by the timeline, that same-shaped curve stretched
+ * over the whole trip implies half the acceleration of a ship that flips — the same order of
+ * burn, spent entirely on getting there rather than half of it on stopping.
+ */
+function routeFraction(t: number, noDeceleration: boolean): number {
+  if (noDeceleration) return t * t;
+  return t <= 0.5 ? 2 * t * t : 1 - 2 * (1 - t) * (1 - t);
+}
+
 interface Entry {
   voyage: Voyage;
   origin: Vector3;
@@ -269,7 +287,8 @@ export function createFleet(viewer: Viewer, options: FleetOptions): Fleet {
 
       // A zero-length span would divide by zero; treat it as an instantaneous jump.
       const raw = span === 0 ? (asOf >= departYear ? 1 : 0) : (asOf - departYear) / span;
-      const progress = Math.min(Math.max(raw, 0), 1);
+      const elapsed = Math.min(Math.max(raw, 0), 1);
+      const progress = routeFraction(elapsed, entry.voyage.noDeceleration === true);
 
       let phase: ShipPhase;
       if (lost !== undefined && year >= lost) phase = 'lost';

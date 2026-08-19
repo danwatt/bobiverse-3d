@@ -396,7 +396,8 @@
       "originId": "epsilon-eridani",
       "destinationId": "gliese-877",
       "departYear": 2223.2,
-      "arriveYear": 2240.3
+      "arriveYear": 2240.3,
+      "noDeceleration": true
     },
     {
       "id": "daedalus-to-gliese-877",
@@ -404,7 +405,8 @@
       "originId": "epsilon-eridani",
       "destinationId": "gliese-877",
       "departYear": 2223.2,
-      "arriveYear": 2240.3
+      "arriveYear": 2240.3,
+      "noDeceleration": true
     },
     {
       "id": "herschel-to-sol",

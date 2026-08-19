@@ -38,9 +38,10 @@ function parseArgs(argv: string[]): Options {
     csv: '',
     overlay: 'src/data/catalog-overlay.json',
     out: 'src/data/stars.json',
-    // Wide enough to hold every system the Bobiverse fleet actually visits — the furthest,
-    // HIP 84051, sits at 33 ly. Vega (25.04) and Fomalhaut (25.13) come along for free.
-    horizonLy: 35,
+    // Wide enough to hold every system the Bobiverse fleet actually visits. Everywhere but one
+    // fits inside 35 ly; HIP 84051 — New Pav — sits at 40.7, which is what pushes this out to
+    // 45 and roughly doubles the star count.
+    horizonLy: 45,
     dryRun: false,
   };
 
@@ -365,12 +366,15 @@ for (const entry of overlay.systems) {
     continue;
   }
 
-  // HYG owns the astrometry; the overlay owns identity and prose.
+  // HYG owns the astrometry; the overlay owns identity and prose. Planets are pure overlay:
+  // HYG is a star catalogue, so a named world only ever comes from here.
   claimed.add(match);
   const system = systems[match];
   if (system.id !== entry.id) renamed.push(`${system.name} (${system.id}) -> ${entry.name} (${entry.id})`);
   system.id = entry.id;
   system.name = entry.name;
+  if (entry.planets) system.planets = entry.planets;
+  if (entry.inBooks) system.inBooks = true;
   if (entry.note) system.note = entry.note;
 }
 

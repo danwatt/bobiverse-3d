@@ -16,13 +16,13 @@
         <span class="field-label">Label</span>
         <div class="seg" id="label-mode" role="group" aria-label="Which systems to label">
           <button class="btn btn--seg is-active" data-label-mode="major">Major</button>
-          <button class="btn btn--seg" data-label-mode="visited">Visited</button>
+          <button class="btn btn--seg" data-label-mode="inBooks">Book</button>
           <button class="btn btn--seg" data-label-mode="all">All</button>
         </div>
       </div>
       <label class="check">
         <input type="checkbox" id="toggle-grid" checked />
-        Reference grid &amp; markers
+        Reference grid
       </label>
       <label class="check">
         <input type="checkbox" id="toggle-routes" checked />
@@ -44,6 +44,10 @@
       <h2 id="info-name">—</h2>
       <p class="subtle" id="info-distance"></p>
       <ul id="info-components"></ul>
+      <div id="info-planets" hidden>
+        <h3 class="info-heading">Named worlds</h3>
+        <ul id="info-worlds" class="world-list"></ul>
+      </div>
       <div id="info-presence" hidden>
         <h3 class="info-heading">Bobs in system</h3>
         <ul id="info-bobs" class="bob-list"></ul>

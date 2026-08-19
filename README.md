@@ -8,10 +8,11 @@ Routes appear only once a voyage has departed, so the map fills in as the timeli
 than showing every future leg at once. A ship under way is a cone pointing down its route; once it
 lands, the cone goes and its destination gains a ring with a count of the Bobs sitting there.
 Selecting a system lists them by name in the top-right panel, with the year each arrived. The **Label** control picks which systems show a name: **Major** (bright landmarks and everything
-inside 11 ly), **Visited** (only the systems the books reach), or **All**. Hovering or selecting a
+inside 11 ly), **Book** (only the systems the books reach), or **All**. Hovering or selecting a
 star names it whatever the mode.
 Scrub or play the timeline at the bottom to watch each Bob move along a straight line between its
-origin and destination at constant speed. The fleet row lists whoever is under way at that moment;
+origin and destination, accelerating to the midpoint and decelerating into the arrival. The fleet
+row lists whoever is under way at that moment;
 click a chip to centre the view on that ship.
 
 ## Quick start
@@ -73,10 +74,14 @@ and the systems the catalogue cannot provide:
 
 - Ten post-Gliese brown dwarfs HYG's lineage predates — the WISE, 2MASS, DENIS, UGPS and SCR
   objects (Luhman 16, WISE 0855−0714, Teegarden's Star, and so on).
-- Three the fleet visits that no catalogue covers: HIP 84051 ("New Pav"), Ragnarok and Odin.
-  Their positions are the bobiverse-map project's estimates, and each carries a note saying so.
+- Eta Leporis, a real HYG row carried by hand because 48.5 ly puts it past the build horizon.
 
-Those thirteen carry hand-entered coordinates. Everything else on the map is HYG's astrometry.
+Those eleven carry hand-entered coordinates. Everything else on the map is HYG's astrometry.
+
+The overlay also names the two *planets* the books spend time on — Ragnarok at Epsilon Eridani and
+Odin at HIP 14101 — under their host system's `planets`. The source map plots both as systems of
+their own, which they are not; a system is a single point at this scale, so they show up in the
+info panel instead of on the map.
 
 Both data sources are CC BY-SA 4.0, so a build of this app redistributes CC BY-SA material — the
 credit line in the top-left panel and the provenance strings inside the data files exist to keep
@@ -101,12 +106,12 @@ step and no extra dependency). Flags: `--csv`, `--overlay`, `--out`, `--horizon`
 
 ### What the script does
 
-1. Filters HYG rows to those within the horizon (35 ly by default — wide enough to reach every
-   system the fleet visits, the furthest being HIP 84051 at an estimated 33 ly).
+1. Filters HYG rows to those within the horizon (45 ly by default — wide enough to reach every
+   system the fleet visits, the furthest being HIP 84051 at 40.7 ly; everywhere else fits in 35).
 2. Groups rows into *systems*: HYG rows are individual stars, so components are united by their
    declared primary, then by physical separation under 0.3 ly. That second pass is what puts
    Proxima in the same system as α Cen A/B, since HYG catalogues them independently.
-   Around 340 systems survive.
+   Around 640 systems survive.
 3. Applies the overlay, matching each entry to a HYG system **by designation first, position
    second**. Designation wins because the overlay's own coordinates are exactly what the rebuild
    replaces. Entries with no HYG counterpart are carried through as-is.
@@ -132,10 +137,13 @@ Every run prints the identifications it made. Two sections deserve a human eye:
   published catalogue.
 - Three.js is Y-up, so the equatorial frame `(x, y, z)` is remapped to `(x, z, -y)`. Celestial
   north points at +Y and the reference grid lies in the equatorial plane.
-- An amber arrow points from the Sun toward the galactic centre — Sagittarius A*, RA 17h 45m,
-  Dec −29°, about 26,700 ly away (GRAVITY collaboration, 2019). It is three orders of magnitude
-  outside this map, so it is drawn as a direction, kept inside the outer ring, and labelled with
-  the real distance. It rides with the "Reference grid & markers" toggle.
+- Sagittarius A* is drawn at its true position: RA 17h 45m, Dec −29°, 26,700 ly out (GRAVITY
+  collaboration, 2019). That is three orders of magnitude beyond the catalogue, so the entire
+  50 ly of stars sits in a pixel of the way there — which is the honest picture. Two knock-on
+  requirements: the camera's far plane runs to 40,000 ly, because `CSS2DRenderer` drops the label
+  of anything outside the clip range, and the marker draws without size attenuation or depth
+  testing, since at that range the depth buffer has saturated. It is always on screen: no display
+  toggle and no label mode hides it.
 
 ## Layout
 
@@ -145,6 +153,8 @@ src/main.ts                   bootstrap and UI wiring
 src/scene.ts                  renderer, camera, controls, label overlay, render loop
 src/starfield.ts              star point cloud, labels, hover/click picking
 src/refGrid.ts                equatorial grid, distance rings, polar axis
+src/galacticCenter.ts         Sagittarius A* at true distance
+src/backgroundStars.ts        backdrop field beyond the catalogue
 src/fleet.ts                  voyage routes and ship markers
 src/timeline.ts               year state and transport controls
 src/astro.ts                  coordinate, colour and magnitude conversions
@@ -177,11 +187,16 @@ catalogue carries the IAU proper name. Delta Eridani is Rana, Pi3 Orionis is Tab
 Eridani is 40 Eridani (Keid). The mapping is an explicit table in
 `scripts/import-bobiverse-data.ts`, not fuzzy matching.
 
-`src/data/bobiverse.ts` exports `systemIds`, the 21 systems the books reach, which drives the
-**Visited** label mode. It is a superset of the voyage endpoints: Ragnarok and Odin appear in the
-story without a route leg of their own. The `bobs` table supplies each replicant's `destroyed`
-year, which is what stops the presence rings from accumulating Bobs the books killed off. The
-`events` table is imported but not yet displayed — it is there for a future event log.
+`src/data/bobiverse.ts` exports `systemIds`, the 19 systems the imported timeline covers — every
+voyage endpoint, plus Epsilon Eridani and HIP 14101, which the story reaches by planet (Ragnarok
+and Odin) rather than by a route leg ending there. The `bobs` table supplies each replicant's
+`destroyed` year, which is what stops the presence rings from accumulating Bobs the books killed
+off. The `events` table is imported but not yet displayed — it is there for a future event log.
+
+The **Book** label mode is that list plus every catalogue system flagged `inBooks` in
+`catalog-overlay.json`. That flag exists for places the books go that the imported timeline knows
+nothing about, because no ship in the table flies there: Eta Leporis, the Quinlan home system, is
+the current example. Adding another is one field in the overlay and a rebuild.
 
 ### Faster-than-light voyages
 
@@ -189,15 +204,28 @@ Thirty-four of the 58 legs are superluminal at face value: Khan's strike force c
 from Epsilon Eridani to 82 Eridani in 3.3 years. That is not an import bug — 35 legs are
 superluminal against the source project's own coordinates too. In the books, Bobs move between
 systems by SCUT transmission once it exists, so a "voyage" after ~2151 is often a matter transfer
-rather than a journey. The map draws every leg the same way: a straight line at constant speed
-between departure and arrival.
+rather than a journey. The map draws every leg the same way: a straight line between departure and
+arrival, flown on the same acceleration profile.
+
+### Flight profile
+
+Ships fly "flip and burn": constant acceleration to the halfway point, flip, then decelerate into
+the destination and arrive at rest. Distance goes as ½at² out of the origin and mirrors that coming
+in, so a ship is only a quarter of the way along at the halfway year — the marker crawls at both
+ends of its route and sprints through the middle.
+
+Two voyages set `noDeceleration` in `src/data/voyages.json` and never flip: Icarus and Daedalus,
+which hit Gliese 877 at speed because they are weapons, not travellers. With their departure and
+arrival years fixed by the timeline, burning the whole way instead of half of it implies half the
+acceleration of a ship that flips — the same order of burn, all of it spent on getting there.
 
 ## Limits
 
-- Travel is linear and non-relativistic — constant speed along a straight line, no time dilation.
-  See the note on faster-than-light legs above.
+- Travel is non-relativistic: a fixed acceleration along a straight line, no time dilation, and
+  arrival years come from the timeline rather than from any real thrust figure. See the note on
+  faster-than-light legs above.
 - Coverage thins out for very faint late-M, L, T and Y dwarfs. The ten in the overlay are the known
-  ones inside 25 ly, not a complete census, and nothing hand-fills the gap between 25 and 35 ly.
+  ones inside 25 ly, not a complete census, and nothing hand-fills the gap out to 45 ly.
 - Only ships under way are drawn individually — a named cone on its route. Ships that have landed
   are counted, not drawn: dozens of them stack on the same handful of stars, and the labels alone
   would bury the systems underneath.

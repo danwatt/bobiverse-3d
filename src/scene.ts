@@ -34,8 +34,10 @@ export interface Viewer {
 export function createViewer(host: HTMLElement): Viewer {
   const scene = new Scene();
 
-  // Far plane reaches past the background starfield's 10,000 ly outer radius.
-  const camera = new PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.05, 11000);
+  // Far plane reaches past Sagittarius A* at 26,700 ly — the furthest thing drawn, and well past
+  // the background starfield's 10,000 ly outer radius. Anything beyond the plane is not merely
+  // clipped: CSS2DRenderer drops its label too, which is what makes the marker disappear.
+  const camera = new PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.05, 40000);
   camera.position.set(19, 27, 57);
 
   const renderer = new WebGLRenderer({ antialias: true });

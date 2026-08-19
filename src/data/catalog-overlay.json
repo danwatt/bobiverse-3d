@@ -1,5 +1,5 @@
 {
-  "_comment": "Hand-authored identity layer for scripts/build-catalog.ts. Each entry is matched to the HYG catalogue by position (within 0.3 ly); on a match the overlay supplies id, name and note while HYG supplies astrometry and components. Entries with no HYG counterpart -- the WISE/2MASS brown dwarfs -- are carried through verbatim. Voyages reference these ids, so removing an entry can break src/data/voyages.json.",
+  "_comment": "Hand-authored identity layer for scripts/build-catalog.ts. Each entry is matched to the HYG catalogue by position (within 0.3 ly); on a match the overlay supplies id, name, note, planets and inBooks while HYG supplies astrometry and components. Entries with no HYG counterpart -- the WISE/2MASS brown dwarfs -- are carried through verbatim. Voyages reference these ids, so removing an entry can break src/data/voyages.json.",
   "systems": [
     {
       "id": "sol",
@@ -196,6 +196,12 @@
           "name": "ε Eridani",
           "spectral": "K2V",
           "absMag": 6.19
+        }
+      ],
+      "planets": [
+        {
+          "name": "Ragnarok",
+          "note": "Terraformed for the Bobiverse's human colony; livable from 2243."
         }
       ],
       "note": "Young star with a debris disk and a confirmed giant planet."
@@ -1441,7 +1447,8 @@
           "absMag": 2.85
         }
       ],
-      "note": "HYG row 28032 (HIP 28103 / HD 40136), carried by hand because 48.5 ly puts it outside the 35 ly build horizon — the numbers here are the catalogue's, not estimates."
+      "inBooks": true,
+      "note": "Home system for the Quinlans. Reached in the story but never a voyage endpoint, so `inBooks` is what puts it in the label mode."
     },
     {
       "id": "gamma-pavonis",
@@ -1462,44 +1469,17 @@
     {
       "id": "hip-84051",
       "name": "HIP 84051",
-      "ra": 17.2,
-      "dec": -40.0,
-      "distanceLy": 33.0,
-      "components": [
-        {
-          "name": "HIP 84051",
-          "spectral": ""
-        }
-      ],
-      "note": "Called New Pav in the books. Position is an estimate from the bobiverse-map project — no catalogue counterpart inside 35 ly."
+      "note": "Called New Pav in the books. A real red dwarf in Ara at 40.7 ly — the reason the build horizon reaches 45 ly rather than the 35 that covers everywhere else the fleet goes."
     },
     {
-      "id": "ragnarok",
-      "name": "Ragnarok",
-      "ra": 3.8,
-      "dec": -12.0,
-      "distanceLy": 12.0,
-      "components": [
-        {
-          "name": "Ragnarok",
-          "spectral": ""
-        }
-      ],
-      "note": "Story location with no catalogue counterpart; position estimated by the bobiverse-map project."
-    },
-    {
-      "id": "odin",
-      "name": "Odin",
-      "ra": 2.5,
-      "dec": -30.0,
-      "distanceLy": 22.0,
-      "components": [
+      "id": "hip-14101",
+      "name": "HIP 14101",
+      "planets": [
         {
           "name": "Odin",
-          "spectral": ""
+          "note": "Gas giant with life in its atmosphere; Howard and Bridget float the city Rivendell there."
         }
-      ],
-      "note": "Story location with no catalogue counterpart; position estimated by the bobiverse-map project."
+      ]
     }
   ]
 }

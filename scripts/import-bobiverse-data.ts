@@ -138,8 +138,8 @@ function literalToJson(literal: string): string {
  *
  * Most are a rename away from the catalogue's own label — the books use the Bayer or Flamsteed
  * form where HYG carries the IAU proper name (Rana for δ Eridani, Tabit for π³ Orionis, Keid
- * for o² Eridani, which the books call 40 Eridani). The last three have no catalogue
- * counterpart at all and live in `catalog-overlay.json` with estimated positions.
+ * for o² Eridani, which the books call 40 Eridani). Two of the source's entries are planets
+ * rather than systems and resolve to the star they orbit.
  */
 const STAR_IDS: Record<string, string> = {
   'Sol': 'sol',
@@ -159,8 +159,11 @@ const STAR_IDS: Record<string, string> = {
   'Gamma Pavonis': 'gamma-pavonis',
   'HIP 14101': 'hip-14101',
   'HIP 84051': 'hip-84051',
-  'Ragnarok': 'ragnarok',
-  'Odin': 'odin',
+  // The source map plots these two as systems of their own, but they are planets: Ragnarok is
+  // the terraformed world at Epsilon Eridani and Odin the gas giant at HIP 14101. They map to
+  // their host stars, and `catalog-overlay.json` carries them as that system's named worlds.
+  'Ragnarok': 'epsilon-eridani',
+  'Odin': 'hip-14101',
   'Zeta Tucanae': 'zeta-tucanae',
   'Pi3 Orionis': 'pi3-orionis',
 };
@@ -231,6 +234,12 @@ function systemId(key: string): string {
 const slugify = (value: string): string =>
   value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
+/**
+ * Voyage ids flown without a deceleration burn. The source timeline has no notion of a flight
+ * profile, so this stays here to survive a re-import.
+ */
+const NO_DECELERATION = new Set(['icarus-to-gliese-877', 'daedalus-to-gliese-877']);
+
 const usedIds = new Set<string>();
 const voyages: Voyage[] = sourceTravels.map((travel) => {
   let id = `${slugify(travel.bob)}-to-${systemId(travel.to)}`;
@@ -245,6 +254,7 @@ const voyages: Voyage[] = sourceTravels.map((travel) => {
     destinationId: systemId(travel.to),
     departYear: travel.depart,
     arriveYear: travel.arrive,
+    ...(NO_DECELERATION.has(id) ? { noDeceleration: true } : {}),
   };
 });
 
@@ -280,8 +290,9 @@ const ATTRIBUTION = [
 ].join('\n');
 
 // Every system the source map plots, catalogue-side. This is a superset of the travel
-// endpoints: Ragnarok and Odin are story locations with no route leg of their own.
-const systemIds = Object.keys(sourceStars).map(systemId).sort();
+// endpoints: the books reach places no route leg ends at. Deduplicated because two of the
+// source's "systems" are planets that resolve to a star already in the list.
+const systemIds = [...new Set(Object.keys(sourceStars).map(systemId))].sort();
 
 const dataFile = `/**
  * The Bobiverse timeline: every replicant and every dated event from books 1-3.

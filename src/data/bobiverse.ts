@@ -34,9 +34,7 @@ export const systemIds: string[] = [
   "hip-14101",
   "hip-84051",
   "kappa-ceti",
-  "odin",
   "pi3-orionis",
-  "ragnarok",
   "sol",
   "zeta-tucanae"
 ];

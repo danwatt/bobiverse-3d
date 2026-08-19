@@ -7,6 +7,7 @@ import starsJson from './data/stars.json';
 import voyagesJson from './data/voyages.json';
 import { createFamilyTree } from './familyTree';
 import { createFleet } from './fleet';
+import { createGalacticCenter } from './galacticCenter';
 import { createRefGrid } from './refGrid';
 import { createViewer } from './scene';
 import { createStarfield } from './starfield';
@@ -26,11 +27,20 @@ viewer.scene.add(createBackgroundStars());
 const refGrid = createRefGrid();
 viewer.scene.add(refGrid);
 
-// Every system the books reach, for the "Visited" label mode. Taken from the imported data
-// rather than from the fleet: Ragnarok and Odin appear in the story without a voyage leg.
-const visitedIds = new Set(bookSystemIds);
+// Sagittarius A* at its real distance, 26,700 ly out. It is the one landmark everything else in
+// the Galaxy is arranged around, so it hangs outside the display toggles and the label modes and
+// stays on screen at all times.
+viewer.scene.add(createGalacticCenter());
 
-const starfield = createStarfield(viewer, catalog.systems, visitedIds);
+// Every system the books reach, for the "In books" label mode. The imported timeline covers the
+// ones the fleet flies to, and the catalogue's own `inBooks` flag covers the rest: the story
+// reaches places no voyage leg ends at, and Eta Leporis — the Quinlan home system — is one.
+const bookIds = new Set([
+  ...bookSystemIds,
+  ...catalog.systems.filter((star) => star.inBooks).map((star) => star.id),
+]);
+
+const starfield = createStarfield(viewer, catalog.systems, bookIds);
 
 // Ships share their name with the Bob flying them, so the replicant table doubles as the record
 // of where each one was built and when it stopped existing.
@@ -79,6 +89,8 @@ const infoPanel = byId('info-panel');
 const infoName = byId('info-name');
 const infoDistance = byId('info-distance');
 const infoComponents = byId<HTMLUListElement>('info-components');
+const infoPlanets = byId('info-planets');
+const infoWorlds = byId<HTMLUListElement>('info-worlds');
 const infoPresence = byId('info-presence');
 const infoBobs = byId<HTMLUListElement>('info-bobs');
 const infoInbound = byId('info-inbound');
@@ -198,6 +210,23 @@ function showStar(star: Star | null): void {
     item.append(swatch, name, meta);
     infoComponents.append(item);
   }
+
+  // Named worlds rather than stars — Ragnarok and Odin are places the books spend chapters in,
+  // and without this they vanish from the map entirely once they stop being fake systems.
+  infoWorlds.replaceChildren();
+  for (const planet of star.planets ?? []) {
+    const name = document.createElement('span');
+    name.textContent = planet.name;
+
+    const meta = document.createElement('span');
+    meta.className = 'comp-meta';
+    meta.textContent = planet.note ?? '';
+
+    const item = document.createElement('li');
+    item.append(name, meta);
+    infoWorlds.append(item);
+  }
+  infoPlanets.hidden = (star.planets?.length ?? 0) === 0;
 
   infoNote.textContent = star.note ?? '';
   infoNote.hidden = star.note === undefined;

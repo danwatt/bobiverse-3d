@@ -11,6 +11,19 @@ export interface StarComponent {
 }
 
 /**
+ * A world the books name, orbiting one of the catalogued systems.
+ *
+ * Planets have no position of their own here: at this scale a system is a single point, so a
+ * planet is a property of its star rather than something the map can plot separately.
+ */
+export interface Planet {
+  /** Name used in the books, e.g. "Ragnarok". */
+  name: string;
+  /** What the story does with it, shown under the system's components. */
+  note?: string;
+}
+
+/**
  * One star *system* — a gravitationally bound group sharing a position on the map.
  *
  * Positions are stored as catalogue values (equatorial RA/Dec + distance) rather than
@@ -28,6 +41,14 @@ export interface Star {
   /** Distance from the Sun, in light-years. */
   distanceLy: number;
   components: StarComponent[];
+  /** Worlds the books name in this system. Supplied by the overlay; HYG knows nothing of them. */
+  planets?: Planet[];
+  /**
+   * Set for a system the books reach that the imported timeline does not cover — somewhere named
+   * in the story with no voyage leg and no Bob built there. Overlay-supplied, and the only way
+   * such a system joins the **In books** label mode.
+   */
+  inBooks?: boolean;
   /** Optional free-text note shown in the info panel. */
   note?: string;
 }
@@ -42,7 +63,13 @@ export interface StarCatalog {
   systems: Star[];
 }
 
-/** A named ship travelling in a straight line between two systems at constant speed. */
+/**
+ * A named ship travelling in a straight line between two systems.
+ *
+ * Ships fly a "flip and burn" profile: constant acceleration to the halfway point, then flip
+ * and decelerate the rest of the way, arriving at rest. So a ship is slowest at both ends of
+ * its route and fastest in the middle, rather than covering the distance at a constant speed.
+ */
 export interface Voyage {
   id: string;
   shipName: string;
@@ -52,15 +79,20 @@ export interface Voyage {
   destinationId: string;
   departYear: number;
   arriveYear: number;
+  /**
+   * Set for a ship that never flips: it burns all the way to its destination and arrives at
+   * full speed. Used by the Gliese 877 impactors, which are weapons rather than travellers.
+   */
+  noDeceleration?: boolean;
 }
 
 /**
  * Which systems carry a name label.
  *
  * `major` is the default subset — bright enough to be a landmark, or close enough to matter.
- * `visited` is every system the fleet departs from or arrives at.
+ * `inBooks` is every system the story reaches, which is more than the fleet's route endpoints.
  */
-export type LabelMode = 'major' | 'visited' | 'all';
+export type LabelMode = 'major' | 'inBooks' | 'all';
 
 /** Shape of `data/voyages.json`. */
 export interface VoyageCatalog {

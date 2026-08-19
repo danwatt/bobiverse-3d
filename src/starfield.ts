@@ -71,8 +71,8 @@ interface Entry {
   labelElement: HTMLDivElement;
   /** True when the system is notable enough to be labelled by default. */
   worthy: boolean;
-  /** True when some voyage starts or ends here. */
-  visited: boolean;
+  /** True when the books reach this system, whether or not a voyage leg touches it. */
+  inBooks: boolean;
 }
 
 const CLICK_SLOP_PX = 5;
@@ -87,7 +87,7 @@ const CLICK_SLOP_PX = 5;
 export function createStarfield(
   viewer: Viewer,
   systems: Star[],
-  visitedIds: ReadonlySet<string>,
+  bookIds: ReadonlySet<string>,
 ): Starfield {
   const group = new Object3D();
   group.name = 'starfield';
@@ -123,7 +123,7 @@ export function createStarfield(
     const worthy = star.id === 'sol' || isLabelWorthy(star);
     label.visible = worthy;
 
-    entries.push({ star, position, label, labelElement, worthy, visited: visitedIds.has(star.id) });
+    entries.push({ star, position, label, labelElement, worthy, inBooks: bookIds.has(star.id) });
   }
 
   const geometry = new BufferGeometry();
@@ -192,7 +192,7 @@ export function createStarfield(
   function applyLabelState(index: number): void {
     const entry = entries[index];
     const inMode =
-      labelMode === 'all' || (labelMode === 'visited' ? entry.visited : entry.worthy);
+      labelMode === 'all' || (labelMode === 'inBooks' ? entry.inBooks : entry.worthy);
     // Hover and selection always win, so a system you are pointing at names itself whatever
     // the mode is.
     entry.label.visible = inMode || index === selectedIndex || index === hoveredIndex;

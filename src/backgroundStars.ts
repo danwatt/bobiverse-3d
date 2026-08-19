@@ -7,8 +7,12 @@ import {
   PointsMaterial,
 } from 'three';
 
-/** Inner edge matches the catalogue horizon, so the backdrop picks up where real data stops. */
-const INNER_RADIUS_LY = 35;
+/**
+ * Inner edge sits clear of the catalogue, so the backdrop picks up where real data stops rather
+ * than mixing with it. The furthest real system — Eta Leporis at 48.5 ly — was competing with
+ * backdrop dots of the same on-screen size when this was set to 50.
+ */
+const INNER_RADIUS_LY = 65;
 const OUTER_RADIUS_LY = 10_000;
 const STAR_COUNT = 6000;
 

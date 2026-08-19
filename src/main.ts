@@ -1,6 +1,7 @@
 import './style.css';
 
 import { spectralColor } from './astro';
+import { createBackgroundStars } from './backgroundStars';
 import { bobs, systemIds as bookSystemIds } from './data/bobiverse';
 import starsJson from './data/stars.json';
 import voyagesJson from './data/voyages.json';
@@ -18,6 +19,8 @@ const voyages = (voyagesJson as VoyageCatalog).voyages;
 const viewer = createViewer(byId('app'));
 
 // ---------- Scene contents ----------
+
+viewer.scene.add(createBackgroundStars());
 
 const refGrid = createRefGrid();
 viewer.scene.add(refGrid);

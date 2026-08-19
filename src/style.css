@@ -47,13 +47,21 @@ body {
 
 /* ---------- Labels drawn in world space ---------- */
 
+/*
+ * CSS2DRenderer writes its own inline `transform` to place these, which beats anything set
+ * here — so nudges away from the star use relative offsets, which compose with it instead of
+ * replacing it.
+ */
+
 .star-label {
   font-size: 11px;
   letter-spacing: 0.02em;
   color: rgba(220, 231, 255, 0.9);
   text-shadow: 0 0 6px rgba(0, 0, 0, 0.95), 0 0 2px rgba(0, 0, 0, 1);
   white-space: nowrap;
-  transform: translate(10px, -2px);
+  position: relative;
+  left: 34px;
+  top: -2px;
   user-select: none;
 }
 
@@ -73,8 +81,47 @@ body {
   color: #8affd0;
   text-shadow: 0 0 6px rgba(0, 0, 0, 0.95);
   white-space: nowrap;
-  transform: translate(10px, -2px);
+  position: relative;
+  left: 30px;
+  top: -2px;
   user-select: none;
+}
+
+.gc-label {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 183, 101, 0.85);
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.95);
+  white-space: nowrap;
+  position: relative;
+  left: 40px;
+  user-select: none;
+  pointer-events: none;
+}
+
+.gc-distance {
+  font-family: var(--mono);
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: rgba(255, 183, 101, 0.5);
+}
+
+.presence-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: #8affd0;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.95);
+  /* Down and left of the star, clear of both the presence ring and the star's own name. */
+  position: relative;
+  left: -18px;
+  top: 13px;
+  user-select: none;
+  pointer-events: none;
 }
 
 .ship-label .pct {
@@ -148,6 +195,54 @@ body {
   color: var(--text);
 }
 
+.field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.field-label {
+  color: var(--text-dim);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.seg {
+  display: flex;
+  flex: 1 1 auto;
+  gap: 4px;
+}
+
+.btn--seg {
+  flex: 1 1 0;
+  height: 24px;
+  padding: 0 6px;
+  font-size: 11px;
+}
+
+.btn--seg.is-active {
+  border-color: var(--accent-dim);
+  background: rgba(111, 179, 255, 0.2);
+  color: var(--accent);
+}
+
+.credit {
+  margin: 10px 0 0;
+  color: var(--text-dim);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.credit a {
+  color: var(--accent-dim);
+}
+
+.credit a:hover {
+  color: var(--accent);
+}
+
 .check input {
   accent-color: var(--accent);
   margin: 0;
@@ -204,6 +299,37 @@ body {
   color: var(--text-dim);
   font-family: var(--mono);
   font-size: 11px;
+}
+
+.info-heading {
+  margin: 14px 0 0;
+  color: var(--text-dim);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.bob-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bob-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 3px 8px;
+  border: 1px solid rgba(138, 255, 208, 0.28);
+  border-radius: 999px;
+  background: rgba(138, 255, 208, 0.08);
+  color: #8affd0;
+  font-size: 11px;
+  white-space: nowrap;
 }
 
 .info-note {
@@ -357,6 +483,12 @@ body {
 }
 
 .fleet-item .route {
+  color: var(--text-dim);
+  font-family: var(--mono);
+}
+
+.fleet-item--summary {
+  border-style: dashed;
   color: var(--text-dim);
   font-family: var(--mono);
 }

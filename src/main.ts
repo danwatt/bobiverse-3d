@@ -1,6 +1,7 @@
 import './style.css';
 
 import { spectralColor } from './astro';
+import { bobs, systemIds as bookSystemIds } from './data/bobiverse';
 import starsJson from './data/stars.json';
 import voyagesJson from './data/voyages.json';
 import { createFleet } from './fleet';
@@ -8,11 +9,11 @@ import { createRefGrid } from './refGrid';
 import { createViewer } from './scene';
 import { createStarfield } from './starfield';
 import { createTimeline } from './timeline';
-import type { ShipState, Star, StarCatalog, Voyage } from './types';
-import { byId } from './ui/dom';
+import type { LabelMode, ShipState, Star, StarCatalog, VoyageCatalog } from './types';
+import { byId, queryAll } from './ui/dom';
 
 const catalog = starsJson as StarCatalog;
-const voyages = voyagesJson as Voyage[];
+const voyages = (voyagesJson as VoyageCatalog).voyages;
 
 const viewer = createViewer(byId('app'));
 
@@ -21,17 +22,40 @@ const viewer = createViewer(byId('app'));
 const refGrid = createRefGrid();
 viewer.scene.add(refGrid);
 
-const starfield = createStarfield(viewer, catalog.systems);
-const fleet = createFleet(viewer, starfield.positions, voyages);
+// Every system the books reach, for the "Visited" label mode. Taken from the imported data
+// rather than from the fleet: Ragnarok and Odin appear in the story without a voyage leg.
+const visitedIds = new Set(bookSystemIds);
+
+const starfield = createStarfield(viewer, catalog.systems, visitedIds);
+
+// Ships share their name with the Bob flying them, so the replicant table doubles as the record
+// of where each one was built and when it stopped existing.
+const lostYears = new Map<string, number>();
+const origins = new Map<string, { systemId: string; year: number }>();
+for (const bob of bobs) {
+  if (bob.destroyed !== null) lostYears.set(bob.name, bob.destroyed);
+  origins.set(bob.name, { systemId: bob.atId, year: bob.created });
+}
+
+const fleet = createFleet(viewer, {
+  positions: starfield.positions,
+  voyages,
+  lostYears,
+  origins,
+});
 
 byId('star-count').textContent = String(catalog.systems.length);
 byId('horizon-ly').textContent = String(catalog.meta.horizonLy);
 
 // ---------- Display toggles ----------
 
-byId<HTMLInputElement>('toggle-all-labels').addEventListener('change', (event) => {
-  starfield.setLabelAll((event.currentTarget as HTMLInputElement).checked);
-});
+const labelModeButtons = queryAll<HTMLButtonElement>('#label-mode .btn--seg');
+for (const button of labelModeButtons) {
+  button.addEventListener('click', () => {
+    starfield.setLabelMode(button.dataset.labelMode as LabelMode);
+    for (const other of labelModeButtons) other.classList.toggle('is-active', other === button);
+  });
+}
 
 byId<HTMLInputElement>('toggle-grid').addEventListener('change', (event) => {
   refGrid.visible = (event.currentTarget as HTMLInputElement).checked;
@@ -47,13 +71,45 @@ const infoPanel = byId('info-panel');
 const infoName = byId('info-name');
 const infoDistance = byId('info-distance');
 const infoComponents = byId<HTMLUListElement>('info-components');
+const infoPresence = byId('info-presence');
+const infoBobs = byId<HTMLUListElement>('info-bobs');
+
+/** The system whose details are on screen, so the panel can follow the year. */
+let selectedStar: Star | null = null;
 
 // The note has no slot in the markup because most systems don't have one.
 const infoNote = document.createElement('p');
 infoNote.className = 'info-note';
 infoPanel.append(infoNote);
 
+/** Who is sitting in the selected system right now. Redrawn whenever the year moves. */
+function renderPresence(): void {
+  const here = selectedStar ? fleet.residents().get(selectedStar.id) : undefined;
+  if (!here || here.length === 0) {
+    infoPresence.hidden = true;
+    return;
+  }
+
+  infoBobs.replaceChildren();
+  for (const resident of here) {
+    const name = document.createElement('span');
+    name.textContent = resident.shipName;
+
+    const since = document.createElement('span');
+    since.className = 'comp-meta';
+    // Arrival years are fractional; the whole year is as precise as this reads.
+    since.textContent = `since ${Math.floor(resident.sinceYear)}`;
+
+    const item = document.createElement('li');
+    item.append(name, since);
+    infoBobs.append(item);
+  }
+  infoPresence.hidden = false;
+}
+
 function showStar(star: Star | null): void {
+  selectedStar = star;
+
   if (!star) {
     infoPanel.hidden = true;
     return;
@@ -84,7 +140,8 @@ function showStar(star: Star | null): void {
     // A handful of catalogue rows carry no spectral type at all.
     const spectral = component.spectral || 'type unknown';
     meta.textContent =
-      component.absMag === undefined ? spectral : `${spectral} · M${component.absMag.toFixed(1)}`;
+      // "Mv" rather than "M", which would read as the spectral class of the same name.
+      component.absMag === undefined ? spectral : `${spectral} · Mv ${component.absMag.toFixed(1)}`;
 
     const item = document.createElement('li');
     item.append(swatch, name, meta);
@@ -93,6 +150,7 @@ function showStar(star: Star | null): void {
 
   infoNote.textContent = star.note ?? '';
   infoNote.hidden = star.note === undefined;
+  renderPresence();
   infoPanel.hidden = false;
 }
 
@@ -105,6 +163,12 @@ const fleetList = byId<HTMLUListElement>('fleet-list');
 const systemsById = new Map(catalog.systems.map((star) => [star.id, star]));
 /** Chips are reused across frames so scrubbing doesn't rebuild the DOM sixty times a second. */
 const chips = new Map<string, { item: HTMLLIElement; status: HTMLSpanElement }>();
+
+// The fleet runs to dozens of ships, so the row lists only the ones under way and keeps a
+// running tally of the rest. Listing all of them would wallpaper the bottom of the screen.
+const fleetSummary = document.createElement('li');
+fleetSummary.className = 'fleet-item fleet-item--summary';
+fleetList.append(fleetSummary);
 
 function systemName(id: string): string {
   return systemsById.get(id)?.name ?? id;
@@ -142,13 +206,20 @@ function renderFleetList(states: ShipState[]): void {
     }
 
     chip.item.dataset.phase = state.phase;
-    chip.status.textContent =
-      state.phase === 'pending'
-        ? `departs ${state.voyage.departYear}`
-        : state.phase === 'arrived'
-          ? `arrived ${state.voyage.arriveYear}`
-          : `${Math.round(state.progress * 100)}%`;
+    chip.item.hidden = state.phase !== 'transit';
+    chip.status.textContent = `${Math.round(state.progress * 100)}%`;
   }
+
+  const underWay = states.filter((state) => state.phase === 'transit').length;
+  let inSystem = 0;
+  for (const here of fleet.residents().values()) inSystem += here.length;
+
+  const lost = new Set(
+    states.filter((state) => state.phase === 'lost').map((state) => state.voyage.shipName),
+  ).size;
+
+  fleetSummary.textContent =
+    `${underWay} under way · ${inSystem} in system` + (lost > 0 ? ` · ${lost} lost` : '');
 }
 
 // Clicking a chip flies the orbit centre to that ship — the only way to find one
@@ -173,6 +244,7 @@ const timeline = createTimeline(viewer, voyages);
 timeline.onChange((year) => {
   latestStates = fleet.update(year);
   renderFleetList(latestStates);
+  renderPresence();
 });
 
 // The timeline only emits on change, so paint the opening year explicitly.

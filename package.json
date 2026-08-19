@@ -8,7 +8,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "typecheck": "tsc",
-    "catalog": "node --experimental-strip-types scripts/build-catalog.ts --csv data-src/hyg_v44.csv"
+    "catalog": "node --experimental-strip-types scripts/build-catalog.ts --csv data-src/hyg_v44.csv",
+    "import-timeline": "node --experimental-strip-types scripts/import-bobiverse-data.ts"
   },
   "dependencies": {
     "three": "^0.180.0"

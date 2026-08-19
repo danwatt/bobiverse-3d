@@ -17,13 +17,13 @@ import {
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { isLabelWorthy, magnitudeToRadius, starPosition, systemAbsMag, systemColor } from './astro';
 import type { Viewer } from './scene';
-import type { Star } from './types';
+import type { LabelMode, Star } from './types';
 
 export interface Starfield {
   /** World position of every system, keyed by `Star.id`. */
   positions: Map<string, Vector3>;
-  /** Label every system rather than only the notable ones. */
-  setLabelAll(all: boolean): void;
+  /** Choose which systems carry a name label. */
+  setLabelMode(mode: LabelMode): void;
   /** Select a system by id, or clear the selection with `null`. */
   select(id: string | null): void;
   /** Register a listener fired whenever the selection changes. */
@@ -71,6 +71,8 @@ interface Entry {
   labelElement: HTMLDivElement;
   /** True when the system is notable enough to be labelled by default. */
   worthy: boolean;
+  /** True when some voyage starts or ends here. */
+  visited: boolean;
 }
 
 const CLICK_SLOP_PX = 5;
@@ -82,7 +84,11 @@ const CLICK_SLOP_PX = 5;
  * with the vertex index doubling as the index into `entries`, which is what makes raycast
  * hits cheap to resolve back to a `Star`.
  */
-export function createStarfield(viewer: Viewer, systems: Star[]): Starfield {
+export function createStarfield(
+  viewer: Viewer,
+  systems: Star[],
+  visitedIds: ReadonlySet<string>,
+): Starfield {
   const group = new Object3D();
   group.name = 'starfield';
   viewer.scene.add(group);
@@ -117,7 +123,7 @@ export function createStarfield(viewer: Viewer, systems: Star[]): Starfield {
     const worthy = star.id === 'sol' || isLabelWorthy(star);
     label.visible = worthy;
 
-    entries.push({ star, position, label, labelElement, worthy });
+    entries.push({ star, position, label, labelElement, worthy, visited: visitedIds.has(star.id) });
   }
 
   const geometry = new BufferGeometry();
@@ -185,11 +191,15 @@ export function createStarfield(viewer: Viewer, systems: Star[]): Starfield {
 
   function applyLabelState(index: number): void {
     const entry = entries[index];
-    entry.label.visible = labelAll || entry.worthy || index === selectedIndex || index === hoveredIndex;
+    const inMode =
+      labelMode === 'all' || (labelMode === 'visited' ? entry.visited : entry.worthy);
+    // Hover and selection always win, so a system you are pointing at names itself whatever
+    // the mode is.
+    entry.label.visible = inMode || index === selectedIndex || index === hoveredIndex;
     entry.labelElement.classList.toggle('star-label--selected', index === selectedIndex);
   }
 
-  let labelAll = false;
+  let labelMode: LabelMode = 'major';
 
   function setHovered(index: number | null): void {
     if (index === hoveredIndex) return;
@@ -232,8 +242,8 @@ export function createStarfield(viewer: Viewer, systems: Star[]): Starfield {
 
   return {
     positions,
-    setLabelAll(all) {
-      labelAll = all;
+    setLabelMode(mode) {
+      labelMode = mode;
       for (let i = 0; i < entries.length; i += 1) applyLabelState(i);
     },
     select(id) {

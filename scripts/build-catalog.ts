@@ -38,7 +38,9 @@ function parseArgs(argv: string[]): Options {
     csv: '',
     overlay: 'src/data/catalog-overlay.json',
     out: 'src/data/stars.json',
-    horizonLy: 25.2,
+    // Wide enough to hold every system the Bobiverse fleet actually visits — the furthest,
+    // HIP 84051, sits at 33 ly. Vega (25.04) and Fomalhaut (25.13) come along for free.
+    horizonLy: 35,
     dryRun: false,
   };
 
@@ -269,8 +271,19 @@ for (const members of groups.values()) {
 
 // ---------- Overlay ----------
 
-/** An overlay entry may name the HYG designation it corresponds to when nothing else resolves it. */
-type OverlayStar = Star & { hygMatch?: string };
+/**
+ * An overlay entry.
+ *
+ * Astrometry is optional: an entry that resolves to a HYG system only contributes identity, and
+ * HYG supplies the numbers. Carrying an entry HYG has never heard of does need coordinates, and
+ * the build fails if they are missing. Keeping them optional stops stale hand-authored positions
+ * from lingering next to the catalogue values that replaced them.
+ */
+type OverlayStar = Pick<Star, 'id' | 'name'> &
+  Partial<Star> & {
+    /** HYG designation to match on, when neither the id nor the name resolves it. */
+    hygMatch?: string;
+  };
 
 interface Overlay {
   /** Hand-authored systems, matched to HYG by designation then position, else carried as-is. */
@@ -311,7 +324,9 @@ const carried: string[] = [];
 const matchedByPosition: string[] = [];
 
 for (const entry of overlay.systems) {
-  const [ox, oy, oz] = cartesian(entry);
+  const positioned =
+    entry.ra !== undefined && entry.dec !== undefined && entry.distanceLy !== undefined;
+  const [ox, oy, oz] = positioned ? cartesian(entry as Star) : [NaN, NaN, NaN];
 
   let match = -1;
   for (const key of [entry.hygMatch ? slugify(tidyName(entry.hygMatch)) : '', entry.id, slugify(entry.name)]) {
@@ -322,7 +337,7 @@ for (const entry of overlay.systems) {
 
   // Systems HYG names differently (Gliese numbers where the overlay uses a proper name) still
   // resolve on position, which is what the match radius is for.
-  if (match === -1) {
+  if (match === -1 && positioned) {
     let nearestDistance = MERGE_RADIUS_LY;
     for (let i = 0; i < systems.length; i += 1) {
       if (claimed.has(i)) continue;
@@ -335,7 +350,7 @@ for (const entry of overlay.systems) {
 
   if (match === -1) {
     const { hygMatch: _ignored, ...carriedStar } = entry;
-    systems.push(carriedStar);
+    systems.push(carriedStar as Star);
     builtPositions.push([ox, oy, oz]);
     // Report the closest thing HYG does have, so a "missing" dwarf that is really a naming
     // mismatch shows up as a suspiciously close neighbour instead of silently duplicating.
@@ -376,7 +391,7 @@ if (duplicateIds.length > 0) {
 
 const ids = new Set(systems.map((system) => system.id));
 const voyages: { shipName: string; originId: string; destinationId: string }[] =
-  JSON.parse(readFileSync('src/data/voyages.json', 'utf8'));
+  JSON.parse(readFileSync('src/data/voyages.json', 'utf8')).voyages;
 
 const dangling = voyages.filter((v) => !ids.has(v.originId) || !ids.has(v.destinationId));
 if (dangling.length > 0) {

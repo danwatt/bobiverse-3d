@@ -12,18 +12,29 @@
     <div class="panel panel--top-left">
       <h1>Local Bubble</h1>
       <p class="subtle"><span id="star-count">0</span> systems within <span id="horizon-ly">25</span> ly</p>
-      <label class="check">
-        <input type="checkbox" id="toggle-all-labels" />
-        Label every system
-      </label>
+      <div class="field">
+        <span class="field-label">Label</span>
+        <div class="seg" id="label-mode" role="group" aria-label="Which systems to label">
+          <button class="btn btn--seg is-active" data-label-mode="major">Major</button>
+          <button class="btn btn--seg" data-label-mode="visited">Visited</button>
+          <button class="btn btn--seg" data-label-mode="all">All</button>
+        </div>
+      </div>
       <label class="check">
         <input type="checkbox" id="toggle-grid" checked />
-        Reference grid &amp; rings
+        Reference grid &amp; markers
       </label>
       <label class="check">
         <input type="checkbox" id="toggle-routes" checked />
         Voyage routes
       </label>
+      <p class="credit">
+        Stars:
+        <a href="https://codeberg.org/astronexus/hyg" target="_blank" rel="noopener">HYG</a> ·
+        Timeline:
+        <a href="https://github.com/thunfischtoast/bobiverse-map" target="_blank" rel="noopener">bobiverse-map</a>
+        · both CC BY-SA 4.0
+      </p>
     </div>
 
     <!-- Top-right: selected system details -->
@@ -32,6 +43,10 @@
       <h2 id="info-name">—</h2>
       <p class="subtle" id="info-distance"></p>
       <ul id="info-components"></ul>
+      <div id="info-presence" hidden>
+        <h3 class="info-heading">Bobs in system</h3>
+        <ul id="info-bobs" class="bob-list"></ul>
+      </div>
     </div>
 
     <!-- Bottom: timeline -->

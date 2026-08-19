@@ -35,7 +35,7 @@ export function createViewer(host: HTMLElement): Viewer {
   const scene = new Scene();
 
   const camera = new PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.05, 4000);
-  camera.position.set(14, 20, 42);
+  camera.position.set(19, 27, 57);
 
   const renderer = new WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));

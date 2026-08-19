@@ -1,66 +1,474 @@
-[
-  {
-    "id": "bob-1",
-    "shipName": "Bob-1",
-    "originId": "sol",
-    "destinationId": "epsilon-eridani",
-    "departYear": 2133,
-    "arriveYear": 2145
+{
+  "meta": {
+    "source": "https://github.com/thunfischtoast/bobiverse-map",
+    "license": "CC BY-SA 4.0",
+    "generated": "2026-08-19",
+    "provenance": "Imported on 2026-08-19 from the bobiverse-map project by Chris (thunfischtoast), https://github.com/thunfischtoast/bobiverse-map, licensed CC BY-SA 4.0 — as is this file and src/data/voyages.json. That project compiled the timeline from community sources: two Bobiverse timeline pastebins (ZcKub4Fc, qwfY3PMU), the Bobiverse Fandom wiki, and the Bob family trees at github.com/eneko/Bobiverse and github.com/sbtn/treeofbob. The underlying story is Dennis E. Taylor's Bobiverse novels."
   },
-  {
-    "id": "mario",
-    "shipName": "Mario",
-    "originId": "epsilon-eridani",
-    "destinationId": "alpha-centauri",
-    "departYear": 2145,
-    "arriveYear": 2163
-  },
-  {
-    "id": "riker",
-    "shipName": "Riker",
-    "originId": "epsilon-eridani",
-    "destinationId": "sol",
-    "departYear": 2145,
-    "arriveYear": 2160
-  },
-  {
-    "id": "milo",
-    "shipName": "Milo",
-    "originId": "epsilon-eridani",
-    "destinationId": "40-eridani",
-    "departYear": 2145,
-    "arriveYear": 2165
-  },
-  {
-    "id": "bill",
-    "shipName": "Bill",
-    "originId": "epsilon-eridani",
-    "destinationId": "82-eridani",
-    "departYear": 2146,
-    "arriveYear": 2172
-  },
-  {
-    "id": "marvin",
-    "shipName": "Marvin",
-    "originId": "epsilon-eridani",
-    "destinationId": "delta-pavonis",
-    "departYear": 2146,
-    "arriveYear": 2178
-  },
-  {
-    "id": "homer",
-    "shipName": "Homer",
-    "originId": "sol",
-    "destinationId": "sirius",
-    "departYear": 2158,
-    "arriveYear": 2172
-  },
-  {
-    "id": "bender",
-    "shipName": "Bender",
-    "originId": "40-eridani",
-    "destinationId": "gj-876",
-    "departYear": 2166,
-    "arriveYear": 2190
-  }
-]
+  "voyages": [
+    {
+      "id": "bob-to-epsilon-eridani",
+      "shipName": "Bob",
+      "originId": "sol",
+      "destinationId": "epsilon-eridani",
+      "departYear": 2133.6,
+      "arriveYear": 2144.6
+    },
+    {
+      "id": "bob-to-delta-eridani",
+      "shipName": "Bob",
+      "originId": "epsilon-eridani",
+      "destinationId": "delta-eridani",
+      "departYear": 2145.7,
+      "arriveYear": 2165.3
+    },
+    {
+      "id": "milo-to-40-eridani",
+      "shipName": "Milo",
+      "originId": "epsilon-eridani",
+      "destinationId": "40-eridani",
+      "departYear": 2145.7,
+      "arriveYear": 2152.5
+    },
+    {
+      "id": "milo-to-82-eridani",
+      "shipName": "Milo",
+      "originId": "40-eridani",
+      "destinationId": "82-eridani",
+      "departYear": 2153.1,
+      "arriveYear": 2165.6
+    },
+    {
+      "id": "mario-to-beta-hydri",
+      "shipName": "Mario",
+      "originId": "epsilon-eridani",
+      "destinationId": "beta-hydri",
+      "departYear": 2145.7,
+      "arriveYear": 2169.6
+    },
+    {
+      "id": "riker-to-sol",
+      "shipName": "Riker",
+      "originId": "epsilon-eridani",
+      "destinationId": "sol",
+      "departYear": 2145.9,
+      "arriveYear": 2157.1
+    },
+    {
+      "id": "homer-to-sol",
+      "shipName": "Homer",
+      "originId": "epsilon-eridani",
+      "destinationId": "sol",
+      "departYear": 2145.9,
+      "arriveYear": 2157.1
+    },
+    {
+      "id": "calvin-to-alpha-centauri",
+      "shipName": "Calvin",
+      "originId": "epsilon-eridani",
+      "destinationId": "alpha-centauri",
+      "departYear": 2150.7,
+      "arriveYear": 2163.8
+    },
+    {
+      "id": "goku-to-alpha-centauri",
+      "shipName": "Goku",
+      "originId": "epsilon-eridani",
+      "destinationId": "alpha-centauri",
+      "departYear": 2150.7,
+      "arriveYear": 2163.8
+    },
+    {
+      "id": "linus-to-epsilon-indi",
+      "shipName": "Linus",
+      "originId": "epsilon-eridani",
+      "destinationId": "epsilon-indi",
+      "departYear": 2150.7,
+      "arriveYear": 2165.3
+    },
+    {
+      "id": "luke-to-kappa-ceti",
+      "shipName": "Luke",
+      "originId": "delta-eridani",
+      "destinationId": "kappa-ceti",
+      "departYear": 2165.8,
+      "arriveYear": 2178.2
+    },
+    {
+      "id": "bender-to-gamma-leporis",
+      "shipName": "Bender",
+      "originId": "delta-eridani",
+      "destinationId": "gamma-leporis",
+      "departYear": 2165.8,
+      "arriveYear": 2180
+    },
+    {
+      "id": "howard-to-40-eridani",
+      "shipName": "Howard",
+      "originId": "sol",
+      "destinationId": "40-eridani",
+      "departYear": 2171.3,
+      "arriveYear": 2188.7
+    },
+    {
+      "id": "marvin-to-pi3-orionis",
+      "shipName": "Marvin",
+      "originId": "delta-eridani",
+      "destinationId": "pi3-orionis",
+      "departYear": 2173.9,
+      "arriveYear": 2190
+    },
+    {
+      "id": "linus-to-epsilon-eridani",
+      "shipName": "Linus",
+      "originId": "epsilon-indi",
+      "destinationId": "epsilon-eridani",
+      "departYear": 2170,
+      "arriveYear": 2178.2
+    },
+    {
+      "id": "khan-to-82-eridani",
+      "shipName": "Khan",
+      "originId": "epsilon-eridani",
+      "destinationId": "82-eridani",
+      "departYear": 2182,
+      "arriveYear": 2185.3
+    },
+    {
+      "id": "hannibal-to-82-eridani",
+      "shipName": "Hannibal",
+      "originId": "epsilon-eridani",
+      "destinationId": "82-eridani",
+      "departYear": 2182,
+      "arriveYear": 2185.3
+    },
+    {
+      "id": "tom-to-82-eridani",
+      "shipName": "Tom",
+      "originId": "epsilon-eridani",
+      "destinationId": "82-eridani",
+      "departYear": 2182,
+      "arriveYear": 2185.3
+    },
+    {
+      "id": "barney-to-82-eridani",
+      "shipName": "Barney",
+      "originId": "epsilon-eridani",
+      "destinationId": "82-eridani",
+      "departYear": 2182,
+      "arriveYear": 2185.3
+    },
+    {
+      "id": "fred-b-to-82-eridani",
+      "shipName": "Fred B.",
+      "originId": "epsilon-eridani",
+      "destinationId": "82-eridani",
+      "departYear": 2182,
+      "arriveYear": 2185.3
+    },
+    {
+      "id": "elmer-to-82-eridani",
+      "shipName": "Elmer",
+      "originId": "epsilon-eridani",
+      "destinationId": "82-eridani",
+      "departYear": 2182,
+      "arriveYear": 2185.3
+    },
+    {
+      "id": "kyle-to-82-eridani",
+      "shipName": "Kyle",
+      "originId": "epsilon-eridani",
+      "destinationId": "82-eridani",
+      "departYear": 2182,
+      "arriveYear": 2185.3
+    },
+    {
+      "id": "ned-to-82-eridani",
+      "shipName": "Ned",
+      "originId": "epsilon-eridani",
+      "destinationId": "82-eridani",
+      "departYear": 2182,
+      "arriveYear": 2185.3
+    },
+    {
+      "id": "jackson-to-82-eridani",
+      "shipName": "Jackson",
+      "originId": "epsilon-eridani",
+      "destinationId": "82-eridani",
+      "departYear": 2182,
+      "arriveYear": 2185.3
+    },
+    {
+      "id": "hector-to-82-eridani",
+      "shipName": "Hector",
+      "originId": "epsilon-eridani",
+      "destinationId": "82-eridani",
+      "departYear": 2182,
+      "arriveYear": 2185.3
+    },
+    {
+      "id": "bashful-to-gliese-877",
+      "shipName": "Bashful",
+      "originId": "gliese-54",
+      "destinationId": "gliese-877",
+      "departYear": 2180.5,
+      "arriveYear": 2187.8
+    },
+    {
+      "id": "hal-to-gliese-877",
+      "shipName": "Hal",
+      "originId": "gliese-54",
+      "destinationId": "gliese-877",
+      "departYear": 2186,
+      "arriveYear": 2188.4
+    },
+    {
+      "id": "mulder-to-eta-cassiopeiae",
+      "shipName": "Mulder",
+      "originId": "epsilon-eridani",
+      "destinationId": "eta-cassiopeiae",
+      "departYear": 2160,
+      "arriveYear": 2170
+    },
+    {
+      "id": "mario-to-zeta-tucanae",
+      "shipName": "Mario",
+      "originId": "beta-hydri",
+      "destinationId": "zeta-tucanae",
+      "departYear": 2169.7,
+      "arriveYear": 2176.8
+    },
+    {
+      "id": "mario-to-gliese-54",
+      "shipName": "Mario",
+      "originId": "zeta-tucanae",
+      "destinationId": "gliese-54",
+      "departYear": 2176.9,
+      "arriveYear": 2180
+    },
+    {
+      "id": "claude-to-gamma-pavonis",
+      "shipName": "Claude",
+      "originId": "epsilon-eridani",
+      "destinationId": "gamma-pavonis",
+      "departYear": 2195,
+      "arriveYear": 2205.3
+    },
+    {
+      "id": "jacques-to-delta-pavonis",
+      "shipName": "Jacques",
+      "originId": "gamma-pavonis",
+      "destinationId": "delta-pavonis",
+      "departYear": 2206,
+      "arriveYear": 2207.1
+    },
+    {
+      "id": "hal-to-gliese-54",
+      "shipName": "Hal",
+      "originId": "gliese-877",
+      "destinationId": "gliese-54",
+      "departYear": 2196.3,
+      "arriveYear": 2197.8
+    },
+    {
+      "id": "howard-to-hip-14101",
+      "shipName": "Howard",
+      "originId": "40-eridani",
+      "destinationId": "hip-14101",
+      "departYear": 2195.3,
+      "arriveYear": 2210.9
+    },
+    {
+      "id": "loki-to-82-eridani",
+      "shipName": "Loki",
+      "originId": "epsilon-eridani",
+      "destinationId": "82-eridani",
+      "departYear": 2192,
+      "arriveYear": 2195.8
+    },
+    {
+      "id": "vern-to-82-eridani",
+      "shipName": "Vern",
+      "originId": "epsilon-eridani",
+      "destinationId": "82-eridani",
+      "departYear": 2192,
+      "arriveYear": 2195.8
+    },
+    {
+      "id": "jeffrey-to-82-eridani",
+      "shipName": "Jeffrey",
+      "originId": "epsilon-eridani",
+      "destinationId": "82-eridani",
+      "departYear": 2192,
+      "arriveYear": 2195.8
+    },
+    {
+      "id": "milton-to-82-eridani",
+      "shipName": "Milton",
+      "originId": "epsilon-eridani",
+      "destinationId": "82-eridani",
+      "departYear": 2192,
+      "arriveYear": 2195.8
+    },
+    {
+      "id": "zeke-to-82-eridani",
+      "shipName": "Zeke",
+      "originId": "epsilon-eridani",
+      "destinationId": "82-eridani",
+      "departYear": 2192,
+      "arriveYear": 2195.8
+    },
+    {
+      "id": "surly-to-82-eridani",
+      "shipName": "Surly",
+      "originId": "epsilon-eridani",
+      "destinationId": "82-eridani",
+      "departYear": 2192,
+      "arriveYear": 2195.8
+    },
+    {
+      "id": "bert-to-40-eridani",
+      "shipName": "Bert",
+      "originId": "sol",
+      "destinationId": "40-eridani",
+      "departYear": 2171.3,
+      "arriveYear": 2188.7
+    },
+    {
+      "id": "ernie-to-40-eridani",
+      "shipName": "Ernie",
+      "originId": "sol",
+      "destinationId": "40-eridani",
+      "departYear": 2171.3,
+      "arriveYear": 2188.7
+    },
+    {
+      "id": "sam-to-40-eridani",
+      "shipName": "Sam",
+      "originId": "sol",
+      "destinationId": "40-eridani",
+      "departYear": 2171.3,
+      "arriveYear": 2189.3
+    },
+    {
+      "id": "rudy-to-epsilon-indi",
+      "shipName": "Rudy",
+      "originId": "sol",
+      "destinationId": "epsilon-indi",
+      "departYear": 2188,
+      "arriveYear": 2190.1
+    },
+    {
+      "id": "edwin-to-epsilon-indi",
+      "shipName": "Edwin",
+      "originId": "sol",
+      "destinationId": "epsilon-indi",
+      "departYear": 2188,
+      "arriveYear": 2190.1
+    },
+    {
+      "id": "hank-to-82-eridani",
+      "shipName": "Hank",
+      "originId": "epsilon-eridani",
+      "destinationId": "82-eridani",
+      "departYear": 2192,
+      "arriveYear": 2195.8
+    },
+    {
+      "id": "elmer-2-to-82-eridani",
+      "shipName": "Elmer-2",
+      "originId": "epsilon-eridani",
+      "destinationId": "82-eridani",
+      "departYear": 2192,
+      "arriveYear": 2195.8
+    },
+    {
+      "id": "loki-4-to-82-eridani",
+      "shipName": "Loki +4",
+      "originId": "epsilon-eridani",
+      "destinationId": "82-eridani",
+      "departYear": 2192,
+      "arriveYear": 2195.8
+    },
+    {
+      "id": "icarus-to-gliese-877",
+      "shipName": "Icarus",
+      "originId": "epsilon-eridani",
+      "destinationId": "gliese-877",
+      "departYear": 2223.2,
+      "arriveYear": 2240.3
+    },
+    {
+      "id": "daedalus-to-gliese-877",
+      "shipName": "Daedalus",
+      "originId": "epsilon-eridani",
+      "destinationId": "gliese-877",
+      "departYear": 2223.2,
+      "arriveYear": 2240.3
+    },
+    {
+      "id": "herschel-to-sol",
+      "shipName": "Herschel",
+      "originId": "delta-pavonis",
+      "destinationId": "sol",
+      "departYear": 2236.7,
+      "arriveYear": 2257.3
+    },
+    {
+      "id": "neil-to-sol",
+      "shipName": "Neil",
+      "originId": "delta-pavonis",
+      "destinationId": "sol",
+      "departYear": 2236.7,
+      "arriveYear": 2257.3
+    },
+    {
+      "id": "jacques-to-hip-84051",
+      "shipName": "Jacques",
+      "originId": "delta-pavonis",
+      "destinationId": "hip-84051",
+      "departYear": 2222,
+      "arriveYear": 2247.4
+    },
+    {
+      "id": "phineas-to-hip-84051",
+      "shipName": "Phineas",
+      "originId": "delta-pavonis",
+      "destinationId": "hip-84051",
+      "departYear": 2222,
+      "arriveYear": 2247.4
+    },
+    {
+      "id": "ferb-to-hip-84051",
+      "shipName": "Ferb",
+      "originId": "delta-pavonis",
+      "destinationId": "hip-84051",
+      "departYear": 2222,
+      "arriveYear": 2247.4
+    },
+    {
+      "id": "howard-to-40-eridani-2",
+      "shipName": "Howard",
+      "originId": "hip-14101",
+      "destinationId": "40-eridani",
+      "departYear": 2217,
+      "arriveYear": 2217.8
+    },
+    {
+      "id": "herschel-to-82-eridani",
+      "shipName": "Herschel",
+      "originId": "sol",
+      "destinationId": "82-eridani",
+      "departYear": 2259.1,
+      "arriveYear": 2263
+    },
+    {
+      "id": "neil-to-82-eridani",
+      "shipName": "Neil",
+      "originId": "sol",
+      "destinationId": "82-eridani",
+      "departYear": 2259.1,
+      "arriveYear": 2263
+    }
+  ]
+}

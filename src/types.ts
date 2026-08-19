@@ -54,7 +54,34 @@ export interface Voyage {
   arriveYear: number;
 }
 
-export type ShipPhase = 'pending' | 'transit' | 'arrived';
+/**
+ * Which systems carry a name label.
+ *
+ * `major` is the default subset — bright enough to be a landmark, or close enough to matter.
+ * `visited` is every system the fleet departs from or arrives at.
+ */
+export type LabelMode = 'major' | 'visited' | 'all';
+
+/** Shape of `data/voyages.json`. */
+export interface VoyageCatalog {
+  meta: {
+    source: string;
+    license: string;
+    generated: string;
+    provenance: string;
+  };
+  voyages: Voyage[];
+}
+
+/** `lost` is a ship destroyed in the books; its route stays on the map as history. */
+export type ShipPhase = 'pending' | 'transit' | 'arrived' | 'lost';
+
+/** A ship sitting in a system, rather than under way. */
+export interface Resident {
+  shipName: string;
+  /** Year it arrived on its most recent completed voyage. */
+  sinceYear: number;
+}
 
 /** A voyage evaluated at one instant on the timeline. */
 export interface ShipState {
@@ -64,4 +91,34 @@ export interface ShipState {
   progress: number;
   /** World-space position at the evaluated year. */
   position: Vector3;
+}
+
+/**
+ * One Bob replicant, from the timeline compiled by the bobiverse-map project.
+ *
+ * Years are fractional (2145.7 is roughly September 2145) because the source timeline places
+ * several events inside the same year.
+ */
+export interface BobReplicant {
+  name: string;
+  /** Replication generation: Bob himself is 1, his direct clones 2, and so on. */
+  gen: number;
+  /** Name of the Bob this one was cloned from; null for the original. */
+  parent: string | null;
+  created: number;
+  /** `Star.id` of the system the Bob was created in. */
+  atId: string;
+  /** Year this Bob was destroyed, or null if it survives the covered books. */
+  destroyed: number | null;
+  /** Which book (1-3) introduces this Bob. */
+  book: number;
+}
+
+/** A dated event from the same timeline. */
+export interface TimelineEvent {
+  year: number;
+  text: string;
+  /** Name of the Bob the event concerns, when it is about one in particular. */
+  bob?: string;
+  book: number;
 }

@@ -2895,6 +2895,7 @@
     {
       "id": "gliese-877",
       "name": "Gliese 877",
+      "note" : "Home of the 'Others' in the books",
       "ra": 22.9298,
       "dec": -75.4587,
       "distanceLy": 28.1,

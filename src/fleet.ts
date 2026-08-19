@@ -60,10 +60,23 @@ function routeFraction(t: number, noDeceleration: boolean): number {
   return t <= 0.5 ? 2 * t * t : 1 - 2 * (1 - t) * (1 - t);
 }
 
+/** Fraction of `voyage`'s route covered at `year`, clamped to the trip's own span. */
+function routeProgress(voyage: Voyage, year: number): number {
+  const span = voyage.arriveYear - voyage.departYear;
+  // A zero-length span would divide by zero; treat it as an instantaneous jump.
+  const raw = span === 0 ? (year >= voyage.departYear ? 1 : 0) : (year - voyage.departYear) / span;
+  return routeFraction(Math.min(Math.max(raw, 0), 1), voyage.noDeceleration === true);
+}
+
 interface Entry {
   voyage: Voyage;
   origin: Vector3;
   destination: Vector3;
+  /**
+   * Far end of the drawn route: the destination, or the turn point for a voyage the ship
+   * abandons. Also where a following `divertedFrom` leg starts.
+   */
+  routeEnd: Vector3;
   /** Reused each frame so the update path allocates nothing. */
   position: Vector3;
   routeLine: Line;
@@ -116,19 +129,52 @@ export function createFleet(viewer: Viewer, options: FleetOptions): Fleet {
   const entries: Entry[] = [];
   /** Every voyage a given ship makes, in departure order. */
   const byShip = new Map<string, Entry[]>();
+  /** Looked up by a leg that continues a diverted voyage, which needs that voyage's turn point. */
+  const byVoyageId = new Map<string, Entry>();
   /** One ring-and-count marker per system, built the first time a ship stops there. */
   const presence = new Map<string, { ring: Mesh; label: CSS2DObject; element: HTMLDivElement }>();
   const residentsBySystem = new Map<string, Resident[]>();
 
+  /**
+   * Where a voyage starts.
+   *
+   * Normally a system, but a ship that turns mid-flight begins its next leg out in open space, at
+   * whatever point the abandoned route had carried it to by the year of the turn.
+   */
+  function originOf(voyage: Voyage): Vector3 {
+    if (voyage.divertedFrom === undefined) {
+      const system = positions.get(voyage.originId);
+      if (!system) throw new Error(`Unknown origin system "${voyage.originId}"`);
+      return system;
+    }
+
+    const turned = byVoyageId.get(voyage.divertedFrom);
+    if (!turned) {
+      throw new Error(
+        `Voyage "${voyage.id}" continues "${voyage.divertedFrom}", which is unknown or listed after it`,
+      );
+    }
+    if (turned.voyage.divertedYear === undefined) {
+      throw new Error(`Voyage "${voyage.id}" continues "${voyage.divertedFrom}", which never diverts`);
+    }
+    return turned.routeEnd;
+  }
+
   function add(voyage: Voyage): void {
-    const origin = positions.get(voyage.originId);
+    const origin = originOf(voyage);
     const destination = positions.get(voyage.destinationId);
-    if (!origin) throw new Error(`Unknown origin system "${voyage.originId}"`);
     if (!destination) throw new Error(`Unknown destination system "${voyage.destinationId}"`);
+
+    // A route the ship abandons was only ever flown as far as the turn, so that is where its line
+    // stops: drawing it all the way in would claim a destination the ship never reaches.
+    const routeEnd =
+      voyage.divertedYear === undefined
+        ? destination
+        : origin.clone().lerp(destination, routeProgress(voyage, voyage.divertedYear));
 
     const color = shipColor(entries.length);
 
-    const routeGeometry = new BufferGeometry().setFromPoints([origin, destination]);
+    const routeGeometry = new BufferGeometry().setFromPoints([origin, routeEnd]);
     const routeLine = new Line(
       routeGeometry,
       new LineBasicMaterial({ color, transparent: true, opacity: 0.18, depthWrite: false }),
@@ -169,6 +215,7 @@ export function createFleet(viewer: Viewer, options: FleetOptions): Fleet {
       voyage,
       origin,
       destination,
+      routeEnd,
       position: origin.clone(),
       routeLine,
       progressLine,
@@ -179,6 +226,7 @@ export function createFleet(viewer: Viewer, options: FleetOptions): Fleet {
     };
 
     entries.push(entry);
+    byVoyageId.set(voyage.id, entry);
 
     const history = byShip.get(voyage.shipName);
     if (history) history.push(entry);
@@ -243,9 +291,12 @@ export function createFleet(viewer: Viewer, options: FleetOptions): Fleet {
       }
 
       if (latest) {
-        // Under way: the ship is drawn on its route rather than sitting anywhere.
-        if (year < latest.voyage.arriveYear) continue;
-        place(latest.voyage.destinationId, { shipName, sinceYear: latest.voyage.arriveYear });
+        // Under way: the ship is drawn on its route rather than sitting anywhere. A ship that
+        // turned off this route is under way too — on the leg that follows — and never lands at
+        // this voyage's destination however far past its nominal arrival the year runs.
+        const { arriveYear, divertedYear } = latest.voyage;
+        if (year < arriveYear || (divertedYear !== undefined && year >= divertedYear)) continue;
+        place(latest.voyage.destinationId, { shipName, sinceYear: arriveYear });
         continue;
       }
 
@@ -277,22 +328,18 @@ export function createFleet(viewer: Viewer, options: FleetOptions): Fleet {
     const states: ShipState[] = [];
 
     for (const entry of entries) {
-      const { departYear, arriveYear } = entry.voyage;
-      const span = arriveYear - departYear;
+      const { departYear, arriveYear, divertedYear } = entry.voyage;
       const lost = lostYears.get(entry.voyage.shipName);
 
-      // A ship destroyed in flight stops where it died, so its travelled leg freezes there
-      // instead of quietly completing the trip.
-      const asOf = lost === undefined ? year : Math.min(year, lost);
-
-      // A zero-length span would divide by zero; treat it as an instantaneous jump.
-      const raw = span === 0 ? (asOf >= departYear ? 1 : 0) : (asOf - departYear) / span;
-      const elapsed = Math.min(Math.max(raw, 0), 1);
-      const progress = routeFraction(elapsed, entry.voyage.noDeceleration === true);
+      // A ship that dies in flight, or turns off this route for another one, stops where it did:
+      // the travelled leg freezes there instead of quietly completing the trip.
+      const asOf = Math.min(year, lost ?? Infinity, divertedYear ?? Infinity);
+      const progress = routeProgress(entry.voyage, asOf);
 
       let phase: ShipPhase;
       if (lost !== undefined && year >= lost) phase = 'lost';
       else if (year < departYear) phase = 'pending';
+      else if (divertedYear !== undefined && year >= divertedYear) phase = 'diverted';
       else if (year >= arriveYear) phase = 'arrived';
       else phase = 'transit';
 

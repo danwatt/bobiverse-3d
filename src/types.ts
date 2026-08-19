@@ -84,6 +84,25 @@ export interface Voyage {
    * full speed. Used by the Gliese 877 impactors, which are weapons rather than travellers.
    */
   noDeceleration?: boolean;
+  /**
+   * Year the ship gives up on this route and turns for somewhere else. It never reaches
+   * `destinationId`: the route stops at wherever the flight profile had got to by this year, and
+   * a following voyage carries the ship on from that point via `divertedFrom`.
+   *
+   * `arriveYear` still records the arrival the ship was flying towards, since the profile before
+   * the turn is the one aimed at `destinationId` — a ship that turns early was still decelerating
+   * for a stop it never made.
+   */
+  divertedYear?: number;
+  /**
+   * `Voyage.id` of a diverted voyage this one continues, for a leg that starts in open space
+   * rather than at a system. The referenced voyage must carry a `divertedYear`, and must appear
+   * before this one in the catalogue.
+   *
+   * `originId` still names the system the ship last actually left, so the route reads as the trip
+   * the ship is on rather than naming a point nobody can find on the map.
+   */
+  divertedFrom?: string;
 }
 
 /**
@@ -105,8 +124,11 @@ export interface VoyageCatalog {
   voyages: Voyage[];
 }
 
-/** `lost` is a ship destroyed in the books; its route stays on the map as history. */
-export type ShipPhase = 'pending' | 'transit' | 'arrived' | 'lost';
+/**
+ * `lost` is a ship destroyed in the books; its route stays on the map as history. `diverted` is
+ * a route the ship turned off before the end, which likewise stays drawn as far as it was flown.
+ */
+export type ShipPhase = 'pending' | 'transit' | 'arrived' | 'lost' | 'diverted';
 
 /** A ship sitting in a system, rather than under way. */
 export interface Resident {

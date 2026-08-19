@@ -100,7 +100,19 @@
       "originId": "delta-eridani",
       "destinationId": "gamma-leporis",
       "departYear": 2165.8,
-      "arriveYear": 2180
+      "arriveYear": 2180,
+      "divertedYear": 2169,
+      "@comment" : "Verify the diverted year"
+    },
+    {
+      "id": "bender-to-eta-leporis",
+      "shipName": "Bender",
+      "originId": "delta-eridani",
+      "destinationId": "eta-leporis",
+      "departYear": 2169,
+      "arriveYear": 2190,
+      "divertedFrom": "bender-to-gamma-leporis",
+      "@comment" : "Verify the diverted year"
     },
     {
       "id": "howard-to-40-eridani",
